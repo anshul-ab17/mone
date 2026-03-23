@@ -1,0 +1,13 @@
+{
+  "name": "@repo/db",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@repo/config":"*"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

@@ -8,3 +8,5 @@ app.get('/health', (c)=>{
     })
 });
 app.route('/api', routes);
+
+export default app;

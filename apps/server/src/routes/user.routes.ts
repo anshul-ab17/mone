@@ -1,5 +1,10 @@
 import { Hono } from "Hono";
-import * as controller from "../controllers/user.controller";
+
+
+const repo = new UserRepo();
+const service = new service
+
+
 
 export const userRouters = new Hono();
-userRouters.get(":/id", controller.getUser);
+
