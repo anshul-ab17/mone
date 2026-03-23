@@ -53,6 +53,7 @@
         "@repo/config": "*",
         "@repo/db": "*",
         "@repo/pubsub": "*",
+        "@repo/types": "*",
         "@types/bun": "latest",
       },
       "peerDependencies": {
@@ -105,6 +106,18 @@
       },
       "devDependencies": {
         "@repo/config": "*",
+        "@types/bun": "latest",
+      },
+      "peerDependencies": {
+        "typescript": "^5",
+      },
+    },
+    "packages/types": {
+      "name": "@repo/types",
+      "dependencies": {
+        "zod": "^4.3.6",
+      },
+      "devDependencies": {
         "@types/bun": "latest",
       },
       "peerDependencies": {
@@ -338,6 +351,8 @@
     "@repo/eslint-config": ["@repo/eslint-config@workspace:packages/eslint-config"],
 
     "@repo/pubsub": ["@repo/pubsub@workspace:packages/pubsub"],
+
+    "@repo/types": ["@repo/types@workspace:packages/types"],
 
     "@repo/typescript-config": ["@repo/typescript-config@workspace:packages/typescript-config"],
 
