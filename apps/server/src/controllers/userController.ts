@@ -1,6 +1,6 @@
 import type { Context } from "hono";
 import jwt from "jsonwebtoken";
-import { signupSchema, signinSchema } from "@repo/types";
+import { AuthSchemas } from "@repo/types";
 import { AppError } from "../utils/appError";
 import { UserService } from "../services/userService";
 import { AuthService } from "../services/authService";
@@ -14,7 +14,7 @@ export class UserController {
   public signup = async (c: Context) => {
     const body = await c.req.json();
 
-    const parsed = signupSchema.safeParse(body);
+    const parsed = AuthSchemas.signup.safeParse(body);
     if (!parsed.success) {
       throw new AppError("VALIDATION_ERROR", 400);
     }
@@ -30,7 +30,7 @@ export class UserController {
   public signin = async (c: Context) => {
     const body = await c.req.json();
 
-    const parsed = signinSchema.safeParse(body);
+    const parsed = AuthSchemas.signin.safeParse(body);
     if (!parsed.success) {
       throw new AppError("VALIDATION_ERROR", 400);
     }
@@ -54,32 +54,28 @@ export class UserController {
       data: { access, refresh },
     });
   };
- 
+
   public signout = async (c: Context) => {
     const cookie = c.req.header("cookie");
-
     if (!cookie) throw new AppError("UNAUTHORIZED", 401);
-
+    
     const sessionId = this.extractSessionId(cookie);
-
     if (!sessionId) throw new AppError("UNAUTHORIZED", 401);
 
     await this.authService.deleteSession(sessionId);
-
     c.header("Set-Cookie", "sessionId=; Max-Age=0; Path=/");
-
     return c.json({ success: true });
   };
 
   public refresh = async (c: Context) => {
-    const { refresh } = await c.req.json();
-
-    if (!refresh) {
-      throw new AppError("INVALID_TOKEN", 401);
+    const body = await c.req.json();
+    const parsed = AuthSchemas.refresh.safeParse(body);
+    if (!parsed.success) {
+      throw new AppError("VALIDATION_ERROR", 400);
     }
 
     try {
-      const payload = this.verify(refresh) as { userId: string };
+      const payload = this.verify(parsed.data.refresh) as { userId: string };
 
       const access = this.authService.generateAccessToken(payload.userId);
 
@@ -90,7 +86,7 @@ export class UserController {
     } catch {
       throw new AppError("INVALID_TOKEN", 401);
     }
-  }; 
+  };
 
   private verify(token: string) {
     return jwt.verify(token, process.env.JWT_SECRET as string);
