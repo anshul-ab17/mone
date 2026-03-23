@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres
+    container_name: mone_db
+    restart: always
+    environment:
+      - POSTGRES_USER:mone
+      - POSTGRES_PASSWORD:postgres
+      - POSTGRES_DB:mone
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    
+  redis:
+    image: redis
+    container_name: pubsub
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
+
+       
