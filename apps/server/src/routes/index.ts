@@ -1,5 +1,5 @@
 import { Hono } from "Hono";
-import { userRouters } from "./user.routes"; 
+import { userRouters } from "./userRoutes"; 
 
 export const routes = new Hono();
 routes.route('/users', userRouters);
