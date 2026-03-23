@@ -8,7 +8,11 @@ const repo = new UserRepo();
 const service = new UserService(repo);
 const auth = new AuthService();
 const controller = new UserController(service,auth);
+
 export const userRouters = new Hono();
 
 userRouters.post('/signin', controller.signin);
 userRouters.post('signin', controller.signin);
+userRouters.post("/signout", controller.signout);
+userRouters.post("/refresh", controller.refresh);
+ 
