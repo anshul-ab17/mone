@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-import { Pool } from "pg";
+import { PrismaClient } from "@prisma/client"; 
 import { PrismaPg } from "@prisma/adapter-pg";
 
 class Database {
@@ -8,10 +7,9 @@ class Database {
 
   public static getInstance(): PrismaClient {
     if (!this.instance) {
-      const pool = new Pool({
-        connectionString: process.env.DB_CONN_POOL,
+      const adapter = new PrismaPg({
+        connectionString: process.env.DB_CONN_POOL
       });
-      const adapter = new PrismaPg(pool);
       this.instance = new PrismaClient({
         adapter,
         log:
@@ -24,4 +22,5 @@ class Database {
   }
 }
 
+console.log(process.env.DB_CONN_POOL);
 export const prisma = Database.getInstance();
