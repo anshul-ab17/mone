@@ -6,4 +6,4 @@ Bun.serve({
     fetch:app.fetch
 })
 
-console.log(`server is running on :${env.PORT}`);
+console.log(`server is running on :${env.PORT}`); 

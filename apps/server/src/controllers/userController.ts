@@ -12,7 +12,13 @@ export class UserController {
   ) {}
 
   public signup = async (c: Context) => {
-    const body = await c.req.json();
+    let body;
+
+    try {
+      body = await c.req.json();
+    } catch {
+      throw new AppError("INVALID_JSON", 400);
+    }
 
     const parsed = AuthSchemas.signup.safeParse(body);
     if (!parsed.success) {
@@ -28,7 +34,13 @@ export class UserController {
   };
 
   public signin = async (c: Context) => {
-    const body = await c.req.json();
+    let body;
+
+    try {
+      body = await c.req.json();
+    } catch {
+      throw new AppError("INVALID_JSON", 400);
+    }
 
     const parsed = AuthSchemas.signin.safeParse(body);
     if (!parsed.success) {
@@ -46,7 +58,7 @@ export class UserController {
 
     c.header(
       "Set-Cookie",
-      `sessionId=${sessionId}; HttpOnly; Path=/; SameSite=Strict`
+      `sessionId=${sessionId}; HttpOnly; Path=/; SameSite=Strict; Secure`
     );
 
     return c.json({
@@ -58,17 +70,26 @@ export class UserController {
   public signout = async (c: Context) => {
     const cookie = c.req.header("cookie");
     if (!cookie) throw new AppError("UNAUTHORIZED", 401);
-    
+
     const sessionId = this.extractSessionId(cookie);
     if (!sessionId) throw new AppError("UNAUTHORIZED", 401);
 
     await this.authService.deleteSession(sessionId);
+
     c.header("Set-Cookie", "sessionId=; Max-Age=0; Path=/");
+
     return c.json({ success: true });
   };
 
   public refresh = async (c: Context) => {
-    const body = await c.req.json();
+    let body;
+
+    try {
+      body = await c.req.json();
+    } catch {
+      throw new AppError("INVALID_JSON", 400);
+    }
+
     const parsed = AuthSchemas.refresh.safeParse(body);
     if (!parsed.success) {
       throw new AppError("VALIDATION_ERROR", 400);
