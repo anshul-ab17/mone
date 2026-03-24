@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  postgres:
+  postgres: 
     image: postgres:15
     container_name: mone_postgres
     restart: always
@@ -13,6 +13,23 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  pgbouncer:
+    image: edoburu/pgbouncer
+    container_name: mone_pgbouncer
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - "6432:6432"
+    environment:
+      DB_USER: mone
+      DB_PASSWORD: postgres
+      DB_HOST: postgres
+      DB_NAME: mone
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 1000
+      DEFAULT_POOL_SIZE: 20
 
   redis:
     image: redis
