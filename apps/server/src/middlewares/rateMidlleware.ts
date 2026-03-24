@@ -3,7 +3,7 @@ import RedisClient from "@repo/pubsub";
 
 export class RateLimiter {
   private LIMIT = 5;
-  private WINDOW = 60; // seconds
+  private WINDOW = 60; // sec
 
   public handler = async (c: Context, next: Next) => {
     const ip = c.req.header("x-forwarded-for") || "global";

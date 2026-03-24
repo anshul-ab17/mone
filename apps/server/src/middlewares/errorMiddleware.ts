@@ -1,5 +1,5 @@
 import type { Context, Next } from "hono";
-import { AppError } from "../utils/appError";
+import { AppError } from "../lib/appError";
 
 export const errorMiddleware = async (c: Context, next: Next) => {
   try {

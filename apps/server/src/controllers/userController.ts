@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import jwt from "jsonwebtoken";
 import { AuthSchemas } from "@repo/types";
-import { AppError } from "../utils/appError";
+import { AppError } from "../lib/appError";
 import { UserService } from "../services/userService";
 import { AuthService } from "../services/authService";
 

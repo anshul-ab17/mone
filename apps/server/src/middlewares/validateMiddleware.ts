@@ -1,6 +1,6 @@
 import type { Context, Next } from "hono";
 import type { z } from "zod";
-import { AppError } from "../utils/appError";
+import { AppError } from "../lib/appError";
 
 export class ValidateMiddleware {
   public static validate(schema: z.ZodType) {
