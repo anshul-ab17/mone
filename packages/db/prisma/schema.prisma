@@ -19,6 +19,7 @@ enum OrderType{
 }
 
 enum OrderStatus{
+  OPEN
   PENDING
   FILLED
   CANCELLED
