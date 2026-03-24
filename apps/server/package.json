@@ -6,7 +6,7 @@
 
   "scripts": {
     "dev": "bun run --watch src/index.ts",
-    "start": "bun run src/index.ts",
+    "start": "bun --env-file=../../.env src/index.ts",
     "build": "bun build src/index.ts --outdir dist",
     "lint": "bunx eslint .",
     "typecheck": "tsc --noEmit"
