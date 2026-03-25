@@ -3,20 +3,26 @@ import { UserRepo } from "../repo/userRepo";
 
 export class UserService {
   constructor(private repo: UserRepo) {}
+  
   public async signup(email: string, password: string) {
     email = this.normalizeEmail(email);
+    
     await this.ensureNotExists(email);
     const hashed = await this.hash(password);
     const user = await this.repo.create(email, hashed);
+    
     return this.sanitizeUser(user);
   }
 
   public async signin(email: string, password: string) {
     email = this.normalizeEmail(email);
+    
     const user = await this.repo.findByEmail(email);
     if (!user) throw new Error("INVALID_CREDENTIALS");
+    
     const valid = await argon2.verify(user.password, password);
     if (!valid) throw new Error("INVALID_CREDENTIALS");
+    
     return this.sanitizeUser(user);
   }
 
