@@ -43,4 +43,16 @@ export class WalletRepo{
         });
     }
 
+    public async updateBalances(userId:string, asset:string, balanceChange: number, locedChange:number){
+        return prisma.wallet.update({
+            where:{
+                userId_asset:{ userId, asset }
+            },
+            data:{
+                balance:{increment:balanceChange},
+                lockedBalance:{increment:locedChange}
+            }
+        })
+    }
+
 }
