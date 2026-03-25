@@ -13,17 +13,23 @@ datasource db {
 }
 
 
-enum OrderType{
+enum OrderSide {
   BUY  // Bid
   SELL  // Asks
 }
 
-enum OrderStatus{
+enum OrderStatus {
   OPEN
   PENDING
   FILLED
   CANCELLED
 }
+
+enum OrderType {
+  LIMIT
+  MARKET
+}
+ 
 
 model User {
   id        String  @id @default(uuid())
@@ -41,6 +47,7 @@ model Order {
   id        String @id @default(uuid())
   userId    String
   marketId  String
+  side      OrderSide
   type      OrderType
   price     Float
   quantity  Float
