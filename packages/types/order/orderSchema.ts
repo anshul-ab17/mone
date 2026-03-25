@@ -1,12 +1,21 @@
 import { z } from "zod";
 
-export class OrderSchemas {
-  public static create = z.object({
+export class OrderSchema {
+  public static order = z.object({
     marketId: z.string(),
-    type: z.enum(["BUY", "SELL"]),
-    price: z.number().positive(),
+    side: z.enum(["BUY", "SELL"]),
+    type: z.enum(["LIMIT", "MARKET"]),
+    price: z.number().positive().optional(),
     quantity: z.number().positive(),
-  });
-}
+  }).refine((data) =>{
+    if(data.type ==="LIMIT" && !data.price) return false;
+    if(data.type ==="MARKET" && data.price) return false;
 
-export type CreateOrderInput = z.infer<typeof OrderSchemas.create>;
+    return true;
+  },{
+    message:"Invalid price for order type.",
+    path:["price"]
+  });
+} 
+
+export type CreateOrderInput = z.infer<typeof OrderSchema.order>;
