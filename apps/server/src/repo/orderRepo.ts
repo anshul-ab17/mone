@@ -9,7 +9,8 @@ export class OrderRepo {
 
     async findById(id:string){
         return prisma.order.findUnique({
-            where:{ id}
+            where:{ id},
+            include: { market: true },
         });
     }
 

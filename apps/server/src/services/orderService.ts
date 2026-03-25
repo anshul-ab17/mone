@@ -1,4 +1,4 @@
-import type {  } from "@repo/types";
+import type { CreateOrderInput } from "@repo/types";
 import { OrderRepo } from "../repo/orderRepo";
 import { WalletService } from "./walletService";
 
@@ -6,7 +6,7 @@ export class OrderService {
   private repo = new OrderRepo();
   private walletService = new WalletService();
 
-  async createOrder(userId: string, data: OrderSchema) {
+  async createOrder(userId: string, data: CreateOrderInput) {
     let requiredAmount = 0;
 
     if (data.side === "BUY") {
@@ -40,8 +40,10 @@ export class OrderService {
     }
 
     const remainingQty = order.quantity - order.filledQty;
- 
-    await this.walletService.unlockBalance(userId, order.asset, remainingQty);
+    // buy -> quoteAsset  and sell -> baseAsset
+    const asset = order.side === "SELL" ? order.market.baseAsset : order.market.quoteAsset;
+
+    await this.walletService.unlockBalance(userId, asset, remainingQty);
 
     return this.repo.update(orderId, {
       status: "CANCELLED",
