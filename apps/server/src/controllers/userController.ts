@@ -1,6 +1,6 @@
 import type { Context } from "hono";
 import jwt from "jsonwebtoken";
-import { AuthSchemas } from "@repo/types";
+import type { SignupInput, RefreshInput } from "@repo/types";
 import { AppError } from "../lib/appError";
 import { UserService } from "../services/userService";
 import { AuthService } from "../services/authService";
@@ -12,45 +12,14 @@ export class UserController {
   ) {}
 
   public signup = async (c: Context) => {
-    let body;
-
-    try {
-      body = await c.req.json();
-    } catch {
-      throw new AppError("INVALID_JSON", 400);
-    }
-
-    const parsed = AuthSchemas.signup.safeParse(body);
-    if (!parsed.success) {
-      throw new AppError("VALIDATION_ERROR", 400);
-    }
-
-    const user = await this.userService.signup(
-      parsed.data.email,
-      parsed.data.password
-    );
-
+    const { email, password } = c.get("validatedBody") as SignupInput;
+    const user = await this.userService.signup(email, password);
     return c.json({ success: true, data: user });
   };
 
   public signin = async (c: Context) => {
-    let body;
-
-    try {
-      body = await c.req.json();
-    } catch {
-      throw new AppError("INVALID_JSON", 400);
-    }
-
-    const parsed = AuthSchemas.signin.safeParse(body);
-    if (!parsed.success) {
-      throw new AppError("VALIDATION_ERROR", 400);
-    }
-
-    const user = await this.userService.signin(
-      parsed.data.email,
-      parsed.data.password
-    );
+    const { email, password } = c.get("validatedBody") as SignupInput;
+    const user = await this.userService.signin(email, password);
 
     const access = this.authService.generateAccessToken(user.id);
     const refresh = this.authService.generateRefreshToken(user.id);
@@ -82,21 +51,9 @@ export class UserController {
   };
 
   public refresh = async (c: Context) => {
-    let body;
-
+    const { refresh } = c.get("validatedBody") as RefreshInput;
     try {
-      body = await c.req.json();
-    } catch {
-      throw new AppError("INVALID_JSON", 400);
-    }
-
-    const parsed = AuthSchemas.refresh.safeParse(body);
-    if (!parsed.success) {
-      throw new AppError("VALIDATION_ERROR", 400);
-    }
-
-    try {
-      const payload = this.verify(parsed.data.refresh) as { userId: string };
+      const payload = this.verify(refresh) as { userId: string };
 
       const access = this.authService.generateAccessToken(payload.userId);
 
