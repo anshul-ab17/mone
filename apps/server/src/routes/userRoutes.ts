@@ -11,8 +11,8 @@ const controller = new UserController(service,auth);
 
 export const userRouters = new Hono();
 
+userRouters.post('/signup', controller.signup);
 userRouters.post('/signin', controller.signin);
-userRouters.post('signin', controller.signin);
 userRouters.post("/signout", controller.signout);
 userRouters.post("/refresh", controller.refresh);
  

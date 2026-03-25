@@ -2,7 +2,8 @@ import { z } from "zod";
 
 export class AuthSchemas {
   public static signup = z.object({
-    email: z.string().email(),
+
+    email: z.email(),
     password: z.string().min(6),
   });
 

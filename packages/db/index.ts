@@ -22,5 +22,4 @@ class Database {
   }
 }
 
-console.log(process.env.DB_CONN_POOL);
 export const prisma = Database.getInstance();
