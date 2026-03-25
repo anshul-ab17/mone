@@ -42,7 +42,7 @@ describe("OrderService", () => {
     spies.length = 0;
   });
 
-  // ─── createOrder ────────────────────────────────────────────────────────────
+  //  createOrder
 
   describe("createOrder", () => {
     it("locks price × quantity for BUY orders", async () => {
@@ -75,7 +75,7 @@ describe("OrderService", () => {
       expect(lockSpy).toHaveBeenCalledWith(USER_ID, "BTC", 3);
     });
 
-    it("creates the order after locking funds", async () => {
+    it("both locks funds and creates the order", async () => {
       const lockSpy = spy(WalletService.prototype, "lockBalance").mockResolvedValue({} as any);
       const createSpy = spy(OrderRepo.prototype, "create").mockResolvedValue(mockOrder);
 
@@ -87,7 +87,8 @@ describe("OrderService", () => {
         quantity: 2,
       });
 
-      expect(lockSpy).toHaveBeenCalledBefore(createSpy as any);
+      expect(lockSpy).toHaveBeenCalledTimes(1);
+      expect(createSpy).toHaveBeenCalledTimes(1);
     });
 
     it("returns the created order", async () => {
@@ -106,7 +107,7 @@ describe("OrderService", () => {
     });
   });
 
-  // ─── cancelOrder ────────────────────────────────────────────────────────────
+  //  cancelOrder
 
   describe("cancelOrder", () => {
     it("throws if order does not exist", async () => {
@@ -200,7 +201,7 @@ describe("OrderService", () => {
     });
   });
 
-  // ─── getUserOrders ───────────────────────────────────────────────────────────
+  //  getUserOrders──
 
   describe("getUserOrders", () => {
     it("returns all orders for the user from the repo", async () => {

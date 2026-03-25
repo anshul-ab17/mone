@@ -16,7 +16,7 @@ const post = (body: unknown) =>
   );
 
 describe("validateOrder middleware", () => {
-  // ─── valid inputs ────────────────────────────────────────────────────────────
+  //  valid inputs
 
   it("accepts a valid LIMIT order", async () => {
     const res = await post({ asset: "BTC", side: "BUY", type: "LIMIT", price: 50000, quantity: 1 });
@@ -33,7 +33,7 @@ describe("validateOrder middleware", () => {
     expect(res.status).toBe(200);
   });
 
-  // ─── LIMIT/MARKET price rules ────────────────────────────────────────────────
+  //  LIMIT/MARKET price rules
 
   it("rejects a LIMIT order without price", async () => {
     const res = await post({ asset: "BTC", side: "BUY", type: "LIMIT", quantity: 1 });
@@ -45,7 +45,7 @@ describe("validateOrder middleware", () => {
     expect(res.status).toBe(400);
   });
 
-  // ─── quantity validation ─────────────────────────────────────────────────────
+  //  quantity validation
 
   it("rejects an order with missing quantity", async () => {
     const res = await post({ asset: "BTC", side: "BUY", type: "MARKET" });
@@ -62,7 +62,7 @@ describe("validateOrder middleware", () => {
     expect(res.status).toBe(400);
   });
 
-  // ─── field validation ────────────────────────────────────────────────────────
+  //  field validation
 
   it("rejects an order with an invalid side", async () => {
     const res = await post({ asset: "BTC", side: "HOLD", type: "MARKET", quantity: 1 });
@@ -84,7 +84,7 @@ describe("validateOrder middleware", () => {
     expect(res.status).toBe(400);
   });
 
-  // ─── error shape ─────────────────────────────────────────────────────────────
+  //  error shape
 
   it("returns an error object on failure", async () => {
     const res = await post({ asset: "BTC", side: "BUY", type: "LIMIT", quantity: 1 });

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "bun:test";
 import app from "../app";
 
-// ─── Health ──────────────────────────────────────────────────────────────────
+//  Health
 
 describe("GET /health", () => {
   it("returns 200 with status OK", async () => {
@@ -11,7 +11,7 @@ describe("GET /health", () => {
   });
 });
 
-// ─── Auth guard ───────────────────────────────────────────────────────────────
+//  Auth guard
 // Every protected route must reject requests that carry no session cookie.
 
 describe("Auth guard — unauthenticated requests", () => {
