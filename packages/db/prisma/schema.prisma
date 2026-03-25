@@ -86,8 +86,10 @@ model Wallet {
   id    String @id @default(uuid())
   userId String 
   asset  String 
-  balance Float
-  locked  Float @default(0)
+  balance Float @default(0)
+  lockedBalance  Float @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   user User  @relation(fields: [userId], references: [id])
 
   @@index([userId])
