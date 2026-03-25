@@ -8,6 +8,7 @@
     "dev": "bun --env-file=../../.env run --watch src/index.ts",
     "start": "bun --env-file=../../.env src/index.ts",
     "build": "bun --env-file=../../.env build src/index.ts --outdir dist",
+    "test": "bun test --env-file=../../.env",
     "lint": "bunx eslint .",
     "typecheck": "tsc --noEmit"
   },
