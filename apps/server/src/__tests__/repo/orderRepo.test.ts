@@ -51,7 +51,7 @@ describe("OrderRepo", () => {
     orderMocks.findMany.mockReset();
   });
 
-  // ─── create ──────────────────────────────────────────────────────────────
+  // ─ create ─
 
   describe("create", () => {
     it("calls prisma.order.create with the supplied data", async () => {
@@ -64,7 +64,7 @@ describe("OrderRepo", () => {
     });
   });
 
-  // ─── findById ────────────────────────────────────────────────────────────
+  // ─ findById ─
 
   describe("findById", () => {
     it("queries by id and includes the market relation", async () => {
@@ -89,7 +89,7 @@ describe("OrderRepo", () => {
     });
   });
 
-  // ─── update ──────────────────────────────────────────────────────────────
+  // ─ update ─
 
   describe("update", () => {
     it("updates the order by id with the supplied data", async () => {
@@ -106,7 +106,7 @@ describe("OrderRepo", () => {
     });
   });
 
-  // ─── findUserOrders ──────────────────────────────────────────────────────
+  // ─ findUserOrders 
 
   describe("findUserOrders", () => {
     it("returns orders for the user sorted by createdAt desc", async () => {

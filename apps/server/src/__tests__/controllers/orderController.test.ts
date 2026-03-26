@@ -20,7 +20,7 @@ const mockOrder = {
   updatedAt: new Date(),
 };
 
-// ─── Test app setup ──────────────────────────────────────────────────────────
+// ─ Test app setup 
 // Bypasses real auth — injects userId and validatedBody directly into context.
 
 const controller = new OrderController();
@@ -39,7 +39,7 @@ testApp.post("/orders", async (c, next) => {
 testApp.delete("/orders/:id", controller.cancelOrder);
 testApp.get("/orders", controller.getOrders);
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─ Helpers ─
 
 const spies: ReturnType<typeof spyOn>[] = [];
 const spy = (method: keyof typeof OrderService.prototype) => {
@@ -53,7 +53,7 @@ afterEach(() => {
   spies.length = 0;
 });
 
-// ─── Tests ───────────────────────────────────────────────────────────────────
+// ─ Tests ─
 
 describe("OrderController", () => {
   describe("POST /orders — createOrder", () => {

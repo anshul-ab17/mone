@@ -23,7 +23,7 @@ describe("MatchingEngine", () => {
     engine = new MatchingEngine();
   });
 
-  // ── no match ──────────────────────────────────────────────────────────────
+  //  no match ─
 
   describe("no match", () => {
     it("adds a BUY to the book when no asks exist", () => {
@@ -57,7 +57,7 @@ describe("MatchingEngine", () => {
     });
   });
 
-  // ── full match ────────────────────────────────────────────────────────────
+  //  full match ─
 
   describe("full match", () => {
     it("fully fills a BUY against an exact resting SELL", () => {
@@ -99,7 +99,7 @@ describe("MatchingEngine", () => {
     });
   });
 
-  // ── partial fill ──────────────────────────────────────────────────────────
+  //  partial fill 
 
   describe("partial fill", () => {
     it("partially fills a BUY when the resting SELL has less quantity", () => {
@@ -145,7 +145,7 @@ describe("MatchingEngine", () => {
     });
   });
 
-  // ── multi-level matching ──────────────────────────────────────────────────
+  //  multi-level matching ─
 
   describe("multi-level matching", () => {
     it("sweeps multiple ask price levels for a single BUY", () => {
@@ -197,7 +197,7 @@ describe("MatchingEngine", () => {
     });
   });
 
-  // ── market isolation ──────────────────────────────────────────────────────
+  //  market isolation
 
   describe("market isolation", () => {
     it("orders in different markets do not interact", () => {
@@ -210,7 +210,7 @@ describe("MatchingEngine", () => {
     });
   });
 
-  // ── trade execution count ─────────────────────────────────────────────────
+  //  trade execution count 
 
   describe("trade execution", () => {
     it("calls TradeEngine.execute once for a single match", () => {

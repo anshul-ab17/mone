@@ -201,7 +201,7 @@ describe("OrderService", () => {
     });
   });
 
-  //  getUserOrders──
+  //  getUserOrders
 
   describe("getUserOrders", () => {
     it("returns all orders for the user from the repo", async () => {
