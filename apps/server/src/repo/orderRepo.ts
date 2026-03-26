@@ -4,6 +4,7 @@ export class OrderRepo {
     async create(data:any){
         return prisma.order.create({
             data,
+            include: { market: true },
         });
     }
 

@@ -1,6 +1,11 @@
 import type { CreateOrderInput } from "@repo/types";
+import { prisma } from "@repo/db";
 import { OrderRepo } from "../repo/orderRepo";
 import { WalletService } from "./walletService";
+import { engine } from "../engine/v1";
+import type { EngineOrder } from "../engine/v1/types";
+import { calculateSlippage } from "./execution/slippage";
+import { settleTrades } from "./execution/settlement";
 
 export class OrderService {
   private repo = new OrderRepo();
@@ -14,10 +19,9 @@ export class OrderService {
     } else {
       requiredAmount = data.quantity;
     }
- 
-    await this.walletService.lockBalance(userId, data.asset,requiredAmount
-    );
- 
+
+    await this.walletService.lockBalance(userId, data.asset, requiredAmount);
+
     const order = await this.repo.create({
       ...data,
       userId,
@@ -25,7 +29,63 @@ export class OrderService {
       status: "OPEN",
     });
 
-    return order;
+    const engineOrder: EngineOrder = {
+      id: order.id,
+      userId: order.userId,
+      marketId: order.marketId,
+      side: order.side,
+      price: order.price ?? 0,
+      quantity: order.quantity,
+      filled: 0,
+      timestamp: Date.now(),
+    };
+
+    const result = engine.process(engineOrder);
+
+    if (data.type === "MARKET" && result.trades.length === 0) {
+      await prisma.order.update({ where: { id: order.id }, data: { status: "CANCELLED" } });
+      await this.walletService.unlockBalance(userId, data.asset, requiredAmount);
+      throw new Error("No liquidity available");
+    }
+
+    const { avgPrice, slippage } = calculateSlippage(result.trades, data.price ?? 0);
+
+    if (result.trades.length > 0) {
+      await prisma.$transaction(async (tx) => {
+        await settleTrades(result.trades, tx);
+
+        await tx.trade.createMany({
+          data: result.trades.map((t) => ({
+            id: t.id,
+            buyOrderId: t.buyOrderId,
+            sellOrderId: t.sellOrderId,
+            price: t.price,
+            quantity: t.quantity,
+          })),
+        });
+
+        await tx.order.update({
+          where: { id: order.id },
+          data: {
+            filledQty: result.filledQty,
+            status:
+              result.filledQty === order.quantity
+                ? "FILLED"
+                : result.filledQty > 0
+                ? "PARTIALLY_FILLED"
+                : "OPEN",
+          },
+        });
+      });
+    }
+
+    return {
+      orderId: order.id,
+      filledQty: result.filledQty,
+      trades: result.trades,
+      avgPrice,
+      slippage,
+    };
   }
 
   async cancelOrder(userId: string, orderId: string) {

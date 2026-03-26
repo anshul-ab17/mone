@@ -2,6 +2,7 @@ import { describe, it, expect, spyOn, beforeEach, afterEach } from "bun:test";
 import { OrderService } from "../../services/orderService";
 import { OrderRepo } from "../../repo/orderRepo";
 import { WalletService } from "../../services/walletService";
+import { engine } from "../../engine/v1";
 
 const USER_ID = "user-1";
 const ORDER_ID = "order-1";
@@ -42,12 +43,15 @@ describe("OrderService", () => {
     spies.length = 0;
   });
 
+  const noTrades = { trades: [], filledQty: 0, remainingQty: 0 };
+
   //  createOrder
 
   describe("createOrder", () => {
     it("locks price × quantity for BUY orders", async () => {
       const lockSpy = spy(WalletService.prototype, "lockBalance").mockResolvedValue({} as any);
       spy(OrderRepo.prototype, "create").mockResolvedValue(mockOrder);
+      spy(engine, "process").mockReturnValue(noTrades);
 
       await service.createOrder(USER_ID, {
         asset: "USDT",
@@ -63,6 +67,7 @@ describe("OrderService", () => {
     it("locks quantity for SELL orders", async () => {
       const lockSpy = spy(WalletService.prototype, "lockBalance").mockResolvedValue({} as any);
       spy(OrderRepo.prototype, "create").mockResolvedValue({ ...mockOrder, side: "SELL" });
+      spy(engine, "process").mockReturnValue(noTrades);
 
       await service.createOrder(USER_ID, {
         asset: "BTC",
@@ -78,6 +83,7 @@ describe("OrderService", () => {
     it("both locks funds and creates the order", async () => {
       const lockSpy = spy(WalletService.prototype, "lockBalance").mockResolvedValue({} as any);
       const createSpy = spy(OrderRepo.prototype, "create").mockResolvedValue(mockOrder);
+      spy(engine, "process").mockReturnValue(noTrades);
 
       await service.createOrder(USER_ID, {
         asset: "USDT",
@@ -91,9 +97,10 @@ describe("OrderService", () => {
       expect(createSpy).toHaveBeenCalledTimes(1);
     });
 
-    it("returns the created order", async () => {
+    it("returns orderId, filledQty, trades, avgPrice, slippage", async () => {
       spy(WalletService.prototype, "lockBalance").mockResolvedValue({} as any);
       spy(OrderRepo.prototype, "create").mockResolvedValue(mockOrder);
+      spy(engine, "process").mockReturnValue(noTrades);
 
       const result = await service.createOrder(USER_ID, {
         asset: "USDT",
@@ -103,7 +110,13 @@ describe("OrderService", () => {
         quantity: 2,
       });
 
-      expect(result).toEqual(mockOrder);
+      expect(result).toMatchObject({
+        orderId: ORDER_ID,
+        filledQty: 0,
+        trades: [],
+        avgPrice: 0,
+        slippage: 0,
+      });
     });
   });
 
