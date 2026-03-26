@@ -50,6 +50,10 @@ export class OrderService {
 
     const { avgPrice, slippage } = calculateSlippage(result.trades, data.price ?? 0);
 
+    if (data.maxSlippage !== undefined && result.trades.length > 0 && Math.abs(slippage) > data.maxSlippage) {
+      throw new Error(`Slippage ${slippage.toFixed(2)}% exceeds max allowed ${data.maxSlippage}%`);
+    }
+
     if (result.trades.length > 0) {
       await prisma.$transaction(async (tx) => {
         await settleTrades(result.trades, tx);
