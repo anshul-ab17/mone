@@ -1,4 +1,4 @@
-import { EngineOrder, Side } from "./types";
+import  type { EngineOrder, Side } from "./types";
 
 export class OrderBook{
     bids: Map<number, EngineOrder[]> = new Map(); //highest buyer first. 

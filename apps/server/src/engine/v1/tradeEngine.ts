@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { EngineOrder, Trade } from "./types";
+import type { EngineOrder, Trade } from "./types";
 
 
 export class TradeEngine{

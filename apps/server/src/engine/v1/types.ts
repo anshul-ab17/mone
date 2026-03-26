@@ -10,7 +10,6 @@ export type EngineOrder = {
     filled:number;
     
     side: Side;
-    
     timeStamp:number;
 }
 

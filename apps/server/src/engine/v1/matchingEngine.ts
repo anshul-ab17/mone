@@ -1,6 +1,6 @@
 import { OrderBook } from "./orderbook";
 import { TradeEngine } from "./tradeEngine";
-import { EngineOrder } from "./types";
+import  type { EngineOrder } from "./types";
 
 
 
