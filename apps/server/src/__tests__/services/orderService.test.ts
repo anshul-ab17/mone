@@ -54,7 +54,7 @@ describe("OrderService", () => {
       spy(engine, "process").mockReturnValue(noTrades);
 
       await service.createOrder(USER_ID, {
-        asset: "USDT",
+        marketId: "market-1", asset: "USDT",
         side: "BUY",
         type: "LIMIT",
         price: 50000,
@@ -70,7 +70,7 @@ describe("OrderService", () => {
       spy(engine, "process").mockReturnValue(noTrades);
 
       await service.createOrder(USER_ID, {
-        asset: "BTC",
+        marketId: "market-1", asset: "BTC",
         side: "SELL",
         type: "LIMIT",
         price: 50000,
@@ -86,7 +86,7 @@ describe("OrderService", () => {
       spy(engine, "process").mockReturnValue(noTrades);
 
       await service.createOrder(USER_ID, {
-        asset: "USDT",
+        marketId: "market-1", asset: "USDT",
         side: "BUY",
         type: "LIMIT",
         price: 50000,
@@ -103,7 +103,7 @@ describe("OrderService", () => {
       spy(engine, "process").mockReturnValue(noTrades);
 
       const result = await service.createOrder(USER_ID, {
-        asset: "USDT",
+        marketId: "market-1", asset: "USDT",
         side: "BUY",
         type: "LIMIT",
         price: 50000,

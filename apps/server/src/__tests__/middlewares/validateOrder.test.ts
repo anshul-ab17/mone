@@ -19,17 +19,17 @@ describe("validateOrder middleware", () => {
   //  valid inputs
 
   it("accepts a valid LIMIT order", async () => {
-    const res = await post({ asset: "BTC", side: "BUY", type: "LIMIT", price: 50000, quantity: 1 });
+    const res = await post({ marketId: "market-1", asset: "BTC", side: "BUY", type: "LIMIT", price: 50000, quantity: 1 });
     expect(res.status).toBe(200);
   });
 
   it("accepts a valid MARKET order (no price)", async () => {
-    const res = await post({ asset: "BTC", side: "SELL", type: "MARKET", quantity: 2 });
+    const res = await post({ marketId: "market-1", asset: "BTC", side: "SELL", type: "MARKET", quantity: 2 });
     expect(res.status).toBe(200);
   });
 
   it("accepts a SELL LIMIT order", async () => {
-    const res = await post({ asset: "ETH", side: "SELL", type: "LIMIT", price: 3000, quantity: 10 });
+    const res = await post({ marketId: "market-1", asset: "ETH", side: "SELL", type: "LIMIT", price: 3000, quantity: 10 });
     expect(res.status).toBe(200);
   });
 
@@ -75,7 +75,12 @@ describe("validateOrder middleware", () => {
   });
 
   it("rejects an order with missing asset", async () => {
-    const res = await post({ side: "BUY", type: "MARKET", quantity: 1 });
+    const res = await post({ marketId: "market-1", side: "BUY", type: "MARKET", quantity: 1 });
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects an order with missing marketId", async () => {
+    const res = await post({ asset: "BTC", side: "BUY", type: "MARKET", quantity: 1 });
     expect(res.status).toBe(400);
   });
 
