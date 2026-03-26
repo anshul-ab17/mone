@@ -10,7 +10,7 @@ export type EngineOrder = {
     filled:number;
     
     side: Side;
-    timeStamp:number;
+    timestamp:number;
 }
 
 export type Trade ={
@@ -23,5 +23,5 @@ export type Trade ={
     buyOrderId:string;
     sellOrderId:string;
 
-    timeStamp:number
+    timestamp:number
 }

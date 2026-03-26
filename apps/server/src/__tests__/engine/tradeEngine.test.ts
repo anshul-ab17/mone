@@ -10,7 +10,7 @@ const makeOrder = (overrides: Partial<EngineOrder> = {}): EngineOrder => ({
   quantity: 1,
   filled: 0,
   side: "BUY",
-  timeStamp: 1000,
+  timestamp: 1000,
   ...overrides,
 });
 
@@ -55,8 +55,8 @@ describe("TradeEngine", () => {
       const before = Date.now();
       const trade = engine.execute(buy, sell, 1, 100);
       const after = Date.now();
-      expect(trade.timeStamp).toBeGreaterThanOrEqual(before);
-      expect(trade.timeStamp).toBeLessThanOrEqual(after);
+      expect(trade.timestamp).toBeGreaterThanOrEqual(before);
+      expect(trade.timestamp).toBeLessThanOrEqual(after);
     });
   });
 });

@@ -11,7 +11,7 @@ const makeOrder = (overrides: Partial<EngineOrder> = {}): EngineOrder => ({
   quantity: 1,
   filled: 0,
   side: "BUY",
-  timeStamp: 1000,
+  timestamp: 1000,
   ...overrides,
 });
 

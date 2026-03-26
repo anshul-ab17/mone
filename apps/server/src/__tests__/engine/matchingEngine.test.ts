@@ -12,7 +12,7 @@ const makeOrder = (overrides: Partial<EngineOrder> = {}): EngineOrder => ({
   quantity: 1,
   filled: 0,
   side: "BUY",
-  timeStamp: Date.now(),
+  timestamp: Date.now(),
   ...overrides,
 });
 

@@ -1,7 +1,6 @@
 import { OrderBook } from "./orderbook";
 import { TradeEngine } from "./tradeEngine";
-import  type { EngineOrder } from "./types";
-
+import  type { EngineOrder, Trade } from "./types";
 
 
 export class MatchingEngine{
@@ -16,7 +15,7 @@ export class MatchingEngine{
         return this.books.get(marketId)!;
     }
 
-    private matchBuy(order: EngineOrder, book: OrderBook) {
+    private matchBuy(order: EngineOrder, book: OrderBook,  trades: Trade[]) {
         while (true) {
             const bestAsk = book.getBestAsk();
             if (bestAsk === null) break;
@@ -31,7 +30,8 @@ export class MatchingEngine{
             const matchRemaining = match.quantity - match.filled;
 
             const tradeQty = Math.min(remaining, matchRemaining);
-            this.tradeEngine.execute(order, match, tradeQty, bestAsk);
+            const trade =this.tradeEngine.execute(order, match, tradeQty, bestAsk);
+            trades.push(trade);
 
             order.filled += tradeQty;
             match.filled += tradeQty;
@@ -46,7 +46,7 @@ export class MatchingEngine{
         }
     }
 
-    private matchSell(order: EngineOrder, book: OrderBook) {
+    private matchSell(order: EngineOrder, book: OrderBook, trades: Trade[]) {
         while (true) {
             const bestBid = book.getBestBid();
             if (bestBid === null) break;
@@ -61,7 +61,8 @@ export class MatchingEngine{
             const matchRemaining = match.quantity - match.filled;
             const tradeQty = Math.min(remaining, matchRemaining);
 
-            this.tradeEngine.execute(match, order, tradeQty, bestBid);
+            const trade = this.tradeEngine.execute(match, order, tradeQty, bestBid);
+            trades.push(trade);
 
             order.filled += tradeQty;
             match.filled += tradeQty;
@@ -78,15 +79,21 @@ export class MatchingEngine{
 
     process(order:EngineOrder) {
         const book = this.getBook(order.marketId);
+        const trades:Trade[]=[];
 
         if(order.side==="BUY"){
-            this.matchBuy(order, book);
+            this.matchBuy(order, book, trades);
         } else{
-            this.matchSell(order, book);
+            this.matchSell(order, book , trades);
         }
 
         if(order.quantity> order.filled){
             book.add(order);
+        }
+        return{
+            trades,
+            filledQty:order.filled,
+            remainigQty:order.quantity- order.filled
         }
     }
 }

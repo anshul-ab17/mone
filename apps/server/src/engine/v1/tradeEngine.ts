@@ -12,7 +12,7 @@ export class TradeEngine{
             price, quantity,
             buyOrderId:buy.id,
             sellOrderId:sell.id,
-            timeStamp:Date.now(),
+            timestamp:Date.now(),
         }
         console.log("TRADE_EXECUTED", trade);
         return trade;
