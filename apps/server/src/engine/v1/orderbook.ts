@@ -19,7 +19,7 @@ export class OrderBook{
     }
 
     getBestAsk():number | null{
-        if(this.bids.size===0) return null;
+        if(this.asks.size===0) return null;
         return Math.min(...this.asks.keys());
     }
 

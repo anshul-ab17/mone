@@ -25,6 +25,7 @@ export class MatchingEngine{
 
             const asks = book.asks.get(bestAsk)!;
             const match = asks[0];
+            if (!match) { book.removeEmpty(bestAsk, "SELL"); break; }
 
             const remaining = order.quantity - order.filled;
             const matchRemaining = match.quantity - match.filled;
@@ -36,14 +37,14 @@ export class MatchingEngine{
             match.filled += tradeQty;
 
             if (match.filled === match.quantity) {
-            asks.shift();
+                asks.shift();
             }
 
             book.removeEmpty(bestAsk, "SELL");
 
             if (order.filled === order.quantity) break;
         }
-        }
+    }
 
     private matchSell(order: EngineOrder, book: OrderBook) {
         while (true) {
@@ -54,6 +55,7 @@ export class MatchingEngine{
 
             const bids = book.bids.get(bestBid)!;
             const match = bids[0];
+            if (!match) { book.removeEmpty(bestBid, "BUY"); break; }
 
             const remaining = order.quantity - order.filled;
             const matchRemaining = match.quantity - match.filled;
@@ -65,7 +67,7 @@ export class MatchingEngine{
             match.filled += tradeQty;
 
             if (match.filled === match.quantity) {
-            bids.shift();
+                bids.shift();
             }
 
             book.removeEmpty(bestBid, "BUY");
