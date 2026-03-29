@@ -14,16 +14,21 @@ export class OrderService {
   async createOrder(userId: string, data: CreateOrderInput) {
     let requiredAmount = 0;
 
-    if (data.side === "BUY") {
+    if (data.side === "BUY" && data.type === "LIMIT") {
       requiredAmount = data.price! * data.quantity;
     } else {
+      // SELL (any type): lock quantity of baseAsset
+      // MARKET BUY: lock quantity of quoteAsset (spend budget = quantity units)
       requiredAmount = data.quantity;
     }
 
     await this.walletService.lockBalance(userId, data.asset, requiredAmount);
 
+    // asset and maxSlippage are service-level fields — not Order columns
+    const { asset, maxSlippage, ...orderData } = data;
+
     const order = await this.repo.create({
-      ...data,
+      ...orderData,
       userId,
       filledQty: 0,
       status: "OPEN",
