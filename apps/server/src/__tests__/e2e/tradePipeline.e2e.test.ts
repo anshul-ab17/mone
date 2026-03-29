@@ -87,8 +87,10 @@ describe("E2E: trade pipeline", () => {
     expect(result.avgPrice).toBe(100);
 
     // trade persisted to DB
+    const firstTrade = result.trades[0];
+    if (!firstTrade) throw new Error("Expected at least one trade");
     const trade = await prisma.trade.findUnique({
-      where: { id: result.trades[0].id },
+      where: { id: firstTrade.id },
     });
     if (!trade) throw new Error("Trade not found in DB");
     expect(trade.price).toBe(100);
