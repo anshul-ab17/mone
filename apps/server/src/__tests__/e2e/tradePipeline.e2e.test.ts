@@ -128,15 +128,20 @@ describe("E2E: trade pipeline", () => {
       data: { userId: user.id, asset: QUOTE, balance: 500, lockedBalance: 0 },
     });
 
-    await expect(
-      service.createOrder(user.id, {
+    let caughtError: Error | null = null;
+    try {
+      await service.createOrder(user.id, {
         marketId,
         asset: QUOTE,
         side: "BUY",
         type: "MARKET",
         quantity: 1,
-      })
-    ).rejects.toThrow("No liquidity available");
+      });
+    } catch (e) {
+      caughtError = e as Error;
+    }
+    expect(caughtError).not.toBeNull();
+    expect(caughtError!.message).toContain("No liquidity available");
 
     // funds should be unlocked (wallet back to original state)
     const wallet = await prisma.wallet.findUnique({

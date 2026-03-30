@@ -79,20 +79,20 @@ export class WalletService {
     asset: string,
     amount: number
   ) {
-    return prisma.$transaction(async (transaction) => {
-      const wallet = await this.getRequiredWallet(transaction, userId, asset);
-
-      if (wallet.lockedBalance < amount) {
-        throw new AppError("INVALID_UNLOCK_AMOUNT", 400);
-      }
-
-      return transaction.wallet.update({
-        where: { userId_asset: { userId, asset } },
-        data: {
-          lockedBalance: { decrement: amount },
-          balance: { increment: amount },
-        },
-      });
+    const result = await prisma.wallet.updateMany({
+      where: { userId, asset, lockedBalance: { gte: amount } },
+      data: {
+        lockedBalance: { decrement: amount },
+        balance: { increment: amount },
+      },
     });
+
+    if (result.count === 0) {
+      const wallet = await prisma.wallet.findUnique({
+        where: { userId_asset: { userId, asset } },
+      });
+      if (!wallet) throw new AppError("WALLET_NOT_FOUND", 404);
+      throw new AppError("INVALID_UNLOCK_AMOUNT", 400);
+    }
   }
 }

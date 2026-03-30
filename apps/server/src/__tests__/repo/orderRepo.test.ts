@@ -59,7 +59,7 @@ describe("OrderRepo", () => {
 
       const result = await repo.create(mockOrder as any);
 
-      expect(orderMocks.create).toHaveBeenCalledWith({ data: mockOrder, include: { market: true } });
+      expect(orderMocks.create).toHaveBeenCalledWith({ data: mockOrder });
       expect(result).toEqual(mockOrder);
     });
   });
