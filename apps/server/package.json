@@ -3,7 +3,6 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
-
   "scripts": {
     "dev": "bun --env-file=../../.env --watch src/index.ts",
     "start": "bun --env-file=../../.env src/index.ts",
@@ -12,20 +11,22 @@
     "lint": "bunx eslint .",
     "check-types": "tsc --noEmit"
   },
-
   "dependencies": {
     "@prisma/client": "^7.5.0",
+    "@repo/config": "*",
     "@repo/db": "*",
+    "@repo/eventbroker": "*",
     "@repo/pubsub": "*",
     "@repo/types": "*",
-    "@repo/config": "*",
+    "@solana/spl-token": "^0.4.14",
+    "@solana/web3.js": "^1.98.4",
     "argon2": "^0.44.0",
     "hono": "^4.12.9",
     "jsonwebtoken": "^9.0.3",
+    "kafkajs": "^2.2.4",
     "redis": "^5.11.0",
     "zod": "^4.3.6"
   },
-
   "devDependencies": {
     "@types/bun": "latest",
     "@types/jsonwebtoken": "^9.0.10",
