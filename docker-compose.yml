@@ -42,6 +42,35 @@ services:
     volumes:
       - redis_data:/data
 
+  # Go matching engine microservice  
+  engine-go:
+    build:
+      context: ./apps/engine-go
+    container_name: mone_engine_go
+    restart: always
+    depends_on:
+      - redpanda
+    environment:
+      KAFKA_BROKER: redpanda:9092
+
+  # Redpanda — Kafka-compatible broker
+  redpanda:
+    image: redpandadata/redpanda:latest
+    container_name: mone_redpanda
+    restart: always
+    command:
+      - redpanda
+      - start
+      - --smp 1
+      - --memory 512M
+      - --reserve-memory 0M
+      - --overprovisioned
+      - --node-id 0
+      - --kafka-addr PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr PLAINTEXT://localhost:9092
+    ports:
+      - "9092:9092"
+
 volumes:
   postgres_data:
   redis_data:
