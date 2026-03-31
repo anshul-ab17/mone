@@ -34,13 +34,15 @@ enum OrderType {
 model User {
   id        String  @id @default(uuid())
   email     String  @unique
-  password  String  
+  password  String
   createdAt DateTime @default(now())
   deletedAt DateTime?
   updatedAt DateTime @updatedAt
 
-  orders    Order[]
-  wallets   Wallet[]
+  orders         Order[]
+  wallets        Wallet[]
+  depositAddress DepositAddress?
+  withdrawals    Withdrawal[]
 }
 
 model Order {
@@ -92,8 +94,8 @@ model Trade {
 
 model Wallet {
   id    String @id @default(uuid())
-  userId String 
-  asset  String 
+  userId String
+  asset  String
   balance Float @default(0)
   lockedBalance  Float @default(0)
   createdAt DateTime @default(now())
@@ -102,4 +104,44 @@ model Wallet {
 
   @@index([userId])
   @@unique([userId, asset])
+}
+
+// Solana on-chain withdrawal/settlement (Phase 8)
+enum WithdrawalStatus {
+  PENDING
+  SUBMITTED
+  CONFIRMED
+  FAILED
+}
+
+model Withdrawal {
+  id                 String           @id @default(uuid())
+  userId             String
+  destinationAddress String
+  amount             Float
+  asset              String           @default("SOL")
+  status             WithdrawalStatus @default(PENDING)
+  txSignature        String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  user               User             @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+// Solana on-chain deposit support  
+model DepositAddress {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  publicKey String   @unique
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model ProcessedTx {
+  signature String   @id
+  userId    String
+  amount    Float
+  asset     String   @default("SOL")
+  createdAt DateTime @default(now())
 }
