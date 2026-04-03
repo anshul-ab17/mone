@@ -36,3 +36,11 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Secrets 
+k8s/secrets.yaml
+charts/mone/values.prod.yaml
+nginx/certs/
+
+# Bun
+bun.lock
