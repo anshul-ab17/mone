@@ -27,6 +27,10 @@ export class UserService {
   }
 
 
+  public async findById(id: string) {
+    return this.repo.findById(id);
+  }
+
   private async hash(password: string) {
     return argon2.hash(password, {
       type: argon2.argon2id,

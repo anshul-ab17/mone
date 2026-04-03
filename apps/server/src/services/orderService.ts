@@ -6,6 +6,11 @@ import { engine } from "../engine/v1";
 import type { EngineOrder } from "../engine/v1/types";
 import { calculateSlippage } from "./execution/slippage";
 import { settleTrades } from "./execution/settlement";
+import { publishOrderbook, publishTrades, publishTicker } from "./pubService";
+import { publishOrderPlaced } from "../eventbroker/producer";
+import { env } from "@repo/config";
+
+const USE_KAFKA = env.USE_KAFKA === "true";
 
 export class OrderService {
   private repo = new OrderRepo();
@@ -45,6 +50,20 @@ export class OrderService {
       timestamp: Date.now(),
     };
 
+    // --- Kafka path (Phase 9): publish to Go engine, settlement is async ---
+    if (USE_KAFKA) {
+      await publishOrderPlaced(engineOrder);
+      return {
+        orderId: order.id,
+        filledQty: 0,
+        trades: [],
+        avgPrice: 0,
+        slippage: 0,
+        async: true,
+      };
+    }
+
+    // --- In-process path (default): synchronous matching + settlement ---
     const result = engine.process(engineOrder);
 
     if (data.type === "MARKET" && result.trades.length === 0) {
@@ -86,6 +105,13 @@ export class OrderService {
           },
         });
       });
+    }
+
+    // Fire-and-forget: publish orderbook, trades, and ticker updates
+    publishOrderbook(engineOrder.marketId).catch(console.error);
+    if (result.trades.length > 0) {
+      publishTrades(engineOrder.marketId, result.trades).catch(console.error);
+      publishTicker(engineOrder.marketId).catch(console.error);
     }
 
     return {

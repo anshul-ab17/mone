@@ -77,6 +77,27 @@ export class MatchingEngine{
         }
     }
 
+    getSnapshot(marketId: string, depth = 10) {
+        const book = this.books.get(marketId);
+        if (!book) return { bestBid: null, bestAsk: null, bids: [], asks: [] };
+
+        const sortedBidPrices = [...book.bids.keys()].sort((a, b) => b - a).slice(0, depth);
+        const sortedAskPrices = [...book.asks.keys()].sort((a, b) => a - b).slice(0, depth);
+
+        return {
+            bestBid: book.getBestBid(),
+            bestAsk: book.getBestAsk(),
+            bids: sortedBidPrices.map((price) => ({
+                price,
+                quantity: book.bids.get(price)!.reduce((sum, o) => sum + (o.quantity - o.filled), 0),
+            })),
+            asks: sortedAskPrices.map((price) => ({
+                price,
+                quantity: book.asks.get(price)!.reduce((sum, o) => sum + (o.quantity - o.filled), 0),
+            })),
+        };
+    }
+
     process(order:EngineOrder) {
         const book = this.getBook(order.marketId);
         const trades:Trade[]=[];

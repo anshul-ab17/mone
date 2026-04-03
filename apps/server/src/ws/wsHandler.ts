@@ -18,6 +18,10 @@ async function startSubscriber() {
       wsRegistry.broadcast(channel, JSON.stringify({ channel, data: JSON.parse(message) }));
     });
 
+    await subscriber.pSubscribe("ticker:*", (message, channel) => {
+      wsRegistry.broadcast(channel, JSON.stringify({ channel, data: JSON.parse(message) }));
+    });
+
     console.log("Redis pub/sub subscriber ready");
   } catch (err) {
     console.error("Failed to start Redis subscriber:", err);
@@ -43,9 +47,12 @@ export const wsRoute = upgradeWebSocket(() => ({
         return;
       }
 
-      const validPrefix = channel.startsWith("orderbook:") || channel.startsWith("trades:");
+      const validPrefix =
+        channel.startsWith("orderbook:") ||
+        channel.startsWith("trades:") ||
+        channel.startsWith("ticker:");
       if (!validPrefix) {
-        ws.send(JSON.stringify({ error: "channel must start with orderbook: or trades:" }));
+        ws.send(JSON.stringify({ error: "channel must start with orderbook:, trades:, or ticker:" }));
         return;
       }
 

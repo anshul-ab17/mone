@@ -66,6 +66,13 @@ export class UserController {
     }
   };
 
+  public me = async (c: Context) => {
+    const userId = c.get("userId") as string;
+    const user = await this.userService.findById(userId);
+    if (!user) return c.json({ error: "Not found" }, 404);
+    return c.json({ success: true, data: user });
+  };
+
   private verify(token: string) {
     return jwt.verify(token, process.env.JWT_SECRET as string);
   }
