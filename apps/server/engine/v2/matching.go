@@ -8,40 +8,68 @@ import (
 	"github.com/google/uuid"
 )
 
-// MatchingEngine holds one order book per market
+type orderRequest struct {
+	order    *EngineOrder
+	response chan TradeExecutedEvent
+}
+
+// MatchingEngine holds one channel+goroutine per market.
+// The global mutex only guards map writes; each market's goroutine
+// runs its order book sequentially — no lock contention under load.
 type MatchingEngine struct {
-	mu    sync.Mutex
-	books map[string]*OrderBook
+	mu      sync.Mutex
+	markets map[string]chan orderRequest
 }
 
 func NewMatchingEngine() *MatchingEngine {
-	return &MatchingEngine{books: make(map[string]*OrderBook)}
+	return &MatchingEngine{markets: make(map[string]chan orderRequest)}
 }
 
-func (me *MatchingEngine) getBook(marketID string) *OrderBook {
-	if _, ok := me.books[marketID]; !ok {
-		me.books[marketID] = NewOrderBook()
-	}
-	return me.books[marketID]
-}
-
-// Process matches an incoming order and returns trades + fill quantities.
-func (me *MatchingEngine) Process(order *EngineOrder) TradeExecutedEvent {
+// getOrCreate returns the channel for a market, creating it (and its
+// dedicated goroutine) on first access.
+func (me *MatchingEngine) getOrCreate(marketID string) chan orderRequest {
 	me.mu.Lock()
 	defer me.mu.Unlock()
+	if ch, ok := me.markets[marketID]; ok {
+		return ch
+	}
+	ch := make(chan orderRequest, 256)
+	me.markets[marketID] = ch
+	go me.runMarket(ch)
+	return ch
+}
 
-	book := me.getBook(order.MarketID)
+// runMarket is the per-market event loop. It owns its OrderBook exclusively,
+// so no synchronisation is needed inside processOrder.
+func (me *MatchingEngine) runMarket(ch chan orderRequest) {
+	book := NewOrderBook()
+	for req := range ch {
+		result := processOrder(req.order, book)
+		req.response <- result
+	}
+}
+
+// Process submits an order to its market's goroutine and waits for the result.
+func (me *MatchingEngine) Process(order *EngineOrder) TradeExecutedEvent {
+	ch := me.getOrCreate(order.MarketID)
+	resp := make(chan TradeExecutedEvent, 1)
+	ch <- orderRequest{order: order, response: resp}
+	return <-resp
+}
+
+// processOrder runs entirely inside the market goroutine — no locks needed.
+func processOrder(order *EngineOrder, book *OrderBook) TradeExecutedEvent {
 	var trades []Trade
 
 	if order.Side == SideBuy {
-		me.matchBuy(order, book, &trades)
+		matchBuy(order, book, &trades)
 	} else {
-		me.matchSell(order, book, &trades)
+		matchSell(order, book, &trades)
 	}
 
 	remaining := order.Quantity - order.Filled
 	if remaining > 0 {
-		o := *order // copy to avoid mutation
+		o := *order
 		book.AddOrder(&o)
 	}
 
@@ -53,7 +81,7 @@ func (me *MatchingEngine) Process(order *EngineOrder) TradeExecutedEvent {
 	}
 }
 
-func (me *MatchingEngine) matchBuy(order *EngineOrder, book *OrderBook, trades *[]Trade) {
+func matchBuy(order *EngineOrder, book *OrderBook, trades *[]Trade) {
 	for {
 		best := book.BestAsk()
 		if best == nil || order.Price < best.Price {
@@ -93,7 +121,7 @@ func (me *MatchingEngine) matchBuy(order *EngineOrder, book *OrderBook, trades *
 	}
 }
 
-func (me *MatchingEngine) matchSell(order *EngineOrder, book *OrderBook, trades *[]Trade) {
+func matchSell(order *EngineOrder, book *OrderBook, trades *[]Trade) {
 	for {
 		best := book.BestBid()
 		if best == nil || order.Price > best.Price {

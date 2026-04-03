@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mone/engine-go/engine"
+	"github.com/mone/engine-go/v2"
 	kafka "github.com/segmentio/kafka-go"
 )
 
