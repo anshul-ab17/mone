@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: engine
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "mone.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.engine.replicas }}
+  selector:
+    matchLabels:
+      {{- include "mone.selectorLabels" "engine" | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "mone.selectorLabels" "engine" | nindent 8 }}
+    spec:
+      containers:
+        - name: engine
+          image: {{ .Values.image.engine }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: KAFKA_BROKER
+              value: redpanda:9092
+          resources:
+            {{- toYaml .Values.engine.resources | nindent 12 }}
