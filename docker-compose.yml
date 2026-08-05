@@ -42,6 +42,18 @@ services:
     volumes:
       - redis_data:/data
 
+  # NATS (JetStream enabled) — replaces Kafka
+  nats:
+    image: nats:2.10-alpine
+    container_name: mone_nats
+    restart: always
+    command: ["--jetstream", "-m", "8222"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    volumes:
+      - nats_data:/data
+
   # Backend API server
   server:
     build:
@@ -52,11 +64,14 @@ services:
     depends_on:
       - pgbouncer
       - redis
+      - nats
     env_file:
       - apps/server/.env
     environment:
       DATABASE_URL: postgresql://mone:postgres@postgres:5432/mone
       REDIS_URL: redis://redis:6379
+      NATS_HOST: nats
+      NATS_PORT: 4222
       FRONTEND_URL: http://localhost:3000
     ports:
       - "3001:3001"
@@ -82,31 +97,10 @@ services:
     container_name: mone_engine
     restart: always
     depends_on:
-      - kafka
+      - nats
     environment:
-      KAFKA_BROKER: kafka:9092
-
-  # Kafka (KRaft mode)
-  kafka:
-    image: confluentinc/cp-kafka:7.6.0
-    container_name: mone_kafka
-    restart: always
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
-      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      NATS_HOST: nats
+      NATS_PORT: 4222
 
   # Nginx reverse proxy + load balancer
   nginx:
@@ -126,3 +120,4 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  nats_data:
