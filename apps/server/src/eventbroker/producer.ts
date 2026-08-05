@@ -1,20 +1,17 @@
-import { kafka, Topics } from "@repo/eventbroker";
+import { Streams, getNats } from "@repo/eventbroker";
 import type { EngineOrder } from "../engine/v1/types";
 
-const producer = kafka.producer();
-let connected = false;
+let jsReady: Awaited<ReturnType<typeof getNats>>["js"] | null = null;
 
-async function ensureConnected() {
-  if (!connected) {
-    await producer.connect();
-    connected = true;
+async function ensureJS() {
+  if (!jsReady) {
+    const { js } = await getNats();
+    jsReady = js;
   }
+  return jsReady;
 }
 
 export async function publishOrderPlaced(order: EngineOrder) {
-  await ensureConnected();
-  await producer.send({
-    topic: Topics.ORDER_PLACED,
-    messages: [{ key: order.marketId, value: JSON.stringify({ order }) }],
-  });
+  const js = await ensureJS();
+  await js.publish(Streams.ORDER_PLACED, JSON.stringify({ order }));
 }

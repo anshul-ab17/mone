@@ -8,5 +8,6 @@ RUN go build -o engine .
 FROM alpine:3.19
 WORKDIR /app
 COPY --from=builder /app/engine .
-ENV KAFKA_BROKER=redpanda:9092
+ENV NATS_HOST=nats
+ENV NATS_PORT=4222
 CMD ["./engine"]

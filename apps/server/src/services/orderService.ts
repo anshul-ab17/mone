@@ -10,7 +10,7 @@ import { publishOrderbook, publishTrades, publishTicker } from "./pubService";
 import { publishOrderPlaced } from "../eventbroker/producer";
 import { env } from "@repo/config";
 
-const USE_KAFKA = env.USE_KAFKA === "true";
+const USE_NATS = env.USE_NATS === "true";
 
 export class OrderService {
   private repo = new OrderRepo();
@@ -50,8 +50,8 @@ export class OrderService {
       timestamp: Date.now(),
     };
 
-    // --- Kafka path (Phase 9): publish to Go engine, settlement is async ---
-    if (USE_KAFKA) {
+    // --- NATS path: publish to Go engine, settlement is async ---
+    if (USE_NATS) {
       await publishOrderPlaced(engineOrder);
       return {
         orderId: order.id,

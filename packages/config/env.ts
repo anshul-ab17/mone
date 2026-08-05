@@ -14,8 +14,10 @@ class Env {
 				SOLANA_MASTER_SECRET: z.string().optional(),
 				USDC_MINT: z.string().default("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"),
 				USDT_MINT: z.string().optional(),
-				KAFKA_BROKER: z.string().default("localhost:9092"),
-				USE_KAFKA: z.string().optional(),
+				NATS_URL: z.string().optional(),
+				NATS_HOST: z.string().default("localhost"),
+				NATS_PORT: z.coerce.number().default(4222),
+				USE_NATS: z.string().optional(),
 		}).parse(process.env)
 	}
 

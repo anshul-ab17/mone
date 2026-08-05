@@ -11,7 +11,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "kafkajs": "^2.2.4",
+    "nats": "^2.29.0",
     "@repo/config": "*"
   }
 }
