@@ -4,9 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --env-file=../../.env --watch src/index.ts",
-    "start": "bun --env-file=../../.env src/index.ts",
-    "build": "bun --env-file=../../.env build src/index.ts --outdir dist",
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "build": "bun build src/index.ts --outdir dist",
     "test": "bun test --env-file=../../.env",
     "lint": "bunx eslint .",
     "check-types": "tsc --noEmit"
@@ -23,7 +23,6 @@
     "argon2": "^0.44.0",
     "hono": "^4.12.9",
     "jsonwebtoken": "^9.0.3",
-    "kafkajs": "^2.2.4",
     "redis": "^5.11.0",
     "zod": "^4.3.6"
   },
