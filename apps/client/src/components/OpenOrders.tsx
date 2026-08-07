@@ -48,10 +48,10 @@ export function OpenOrders({ refreshKey }: { refreshKey?: number }) {
   }
 
   return (
-    <div className="overflow-auto h-full">
-      <table className="w-full text-xs">
-        <thead className="sticky top-0 bg-[#0d0d0d]">
-          <tr className="text-[#3a3a3a] uppercase tracking-wide text-[10px]">
+    <div className="overflow-auto h-full bg-[#0c0f17]">
+      <table className="w-full text-xs font-mono">
+        <thead className="sticky top-0 bg-[#0d111a] border-b border-[#181f2b]">
+          <tr className="text-[#64748b] uppercase tracking-wide text-[10px] font-sans">
             <th className="text-left px-3 py-2 font-medium">Market</th>
             <th className="text-left px-3 py-2 font-medium">Side</th>
             <th className="text-left px-3 py-2 font-medium">Type</th>
@@ -64,17 +64,17 @@ export function OpenOrders({ refreshKey }: { refreshKey?: number }) {
         </thead>
         <tbody>
           {orders.map((o) => (
-            <tr key={o.id} className="border-t border-[#141414] hover:bg-[#111] transition-colors group">
-              <td className="px-3 py-2 font-mono text-[#666]">
-                {o.market.baseAsset}<span className="text-[#333]">/{o.market.quoteAsset}</span>
+            <tr key={o.id} className="border-t border-[#141923] hover:bg-[#141a24] transition-colors group">
+              <td className="px-3 py-2 font-mono text-[#cbd5e1]">
+                {o.market.baseAsset}<span className="text-[#64748b]">/{o.market.quoteAsset}</span>
               </td>
-              <td className={`px-3 py-2 font-semibold ${o.side === "BUY" ? "text-green-400" : "text-red-400"}`}>
+              <td className={`px-3 py-2 font-semibold ${o.side === "BUY" ? "text-[#00c087]" : "text-[#f84960]"}`}>
                 {o.side}
               </td>
-              <td className="px-3 py-2 text-[#444]">{o.type}</td>
-              <td className="px-3 py-2 text-right font-mono text-[#888]">{o.price?.toFixed(2) ?? "MKT"}</td>
-              <td className="px-3 py-2 text-right font-mono text-[#888]">{o.quantity}</td>
-              <td className="px-3 py-2 text-right font-mono text-[#555]">{o.filledQty}</td>
+              <td className="px-3 py-2 text-[#94a3b8]">{o.type}</td>
+              <td className="px-3 py-2 text-right font-mono text-[#cbd5e1]">{o.price?.toFixed(2) ?? "MKT"}</td>
+              <td className="px-3 py-2 text-right font-mono text-[#cbd5e1]">{o.quantity}</td>
+              <td className="px-3 py-2 text-right font-mono text-[#64748b]">{o.filledQty}</td>
               <td className="px-3 py-2 text-right">
                 <span className={`inline-block text-[10px] font-medium px-1.5 py-0.5 rounded border ${STATUS_STYLE[o.status] ?? STATUS_STYLE.CANCELLED}`}>
                   {o.status === "PARTIALLY_FILLED" ? "PARTIAL" : o.status}
@@ -84,7 +84,7 @@ export function OpenOrders({ refreshKey }: { refreshKey?: number }) {
                 <button
                   onClick={() => cancel(o.id)}
                   disabled={cancelling === o.id}
-                  className="text-[#444] hover:text-red-400 disabled:opacity-40 transition-colors text-[10px] font-medium opacity-0 group-hover:opacity-100"
+                  className="text-[#64748b] hover:text-[#f84960] disabled:opacity-40 transition-colors text-[10px] font-medium opacity-0 group-hover:opacity-100"
                 >
                   {cancelling === o.id ? "…" : "Cancel"}
                 </button>

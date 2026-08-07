@@ -26,10 +26,10 @@ export function RecentTrades({ marketId }: { marketId: string }) {
   }
 
   return (
-    <div className="overflow-auto h-full">
-      <table className="w-full text-xs">
-        <thead className="sticky top-0 bg-[#0d0d0d]">
-          <tr className="text-[#3a3a3a] uppercase tracking-wide text-[10px]">
+    <div className="overflow-auto h-full bg-[#0c0f17]">
+      <table className="w-full text-xs font-mono">
+        <thead className="sticky top-0 bg-[#0d111a] border-b border-[#181f2b]">
+          <tr className="text-[#64748b] uppercase tracking-wide text-[10px] font-sans">
             <th className="text-right px-3 py-2 font-medium">Price</th>
             <th className="text-right px-3 py-2 font-medium">Size</th>
             <th className="text-right px-3 py-2 font-medium">Time</th>
@@ -37,10 +37,10 @@ export function RecentTrades({ marketId }: { marketId: string }) {
         </thead>
         <tbody>
           {trades.map((t, i) => (
-            <tr key={t.id} className={`border-t border-[#141414] hover:bg-[#111] transition-colors ${i === 0 ? "opacity-100" : ""}`}>
-              <td className="px-3 py-1.5 text-right font-mono text-white">{t.price.toFixed(2)}</td>
-              <td className="px-3 py-1.5 text-right font-mono text-[#666]">{t.quantity.toFixed(4)}</td>
-              <td className="px-3 py-1.5 text-right text-[#333] tabular-nums">
+            <tr key={t.id} className={`border-t border-[#141923] hover:bg-[#141a24] transition-colors ${i === 0 ? "opacity-100" : ""}`}>
+              <td className="px-3 py-1.5 text-right font-mono text-[#00c087] font-medium">{t.price.toFixed(2)}</td>
+              <td className="px-3 py-1.5 text-right font-mono text-[#94a3b8]">{t.quantity.toFixed(4)}</td>
+              <td className="px-3 py-1.5 text-right text-[#64748b] tabular-nums text-[11px]">
                 {new Date(t.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
               </td>
             </tr>
