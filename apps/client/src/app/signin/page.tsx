@@ -32,39 +32,39 @@ export default function SigninPage() {
   return (
     <div
       className="flex flex-1 items-center justify-center px-4"
-      style={{ background: "radial-gradient(ellipse 70% 40% at 50% 0%, rgba(128,0,32,0.1) 0%, transparent 60%), #0a0a0a" }}
+      style={{ background: "radial-gradient(ellipse 70% 40% at 50% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 60%), #07090e" }}
     >
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="font-bold text-2xl tracking-widest text-white">
-            <span style={{ color: "#800020" }}>M</span>O<span style={{ color: "#800020" }}>N</span>E
+          <Link href="/" className="inline-flex items-center justify-center">
+            <img src="/waarrr.png" alt="Mone" width={52} height={52} className="rounded-full object-contain" />
           </Link>
         </div>
 
-        <div className="bg-[#0d0d0d] border border-[#1f1f1f] rounded-2xl p-8 space-y-6">
+        <div className="bg-[#0c0f17] border border-[#181f2b] rounded-2xl p-8 space-y-6 shadow-2xl">
           <div>
-            <h1 className="text-lg font-semibold text-white">Welcome back</h1>
-            <p className="text-sm text-[#555] mt-0.5">Sign in to your account</p>
+            <h1 className="text-xl font-bold text-white tracking-tight">Welcome to Mone</h1>
+            <p className="text-xs text-[#64748b] mt-1">Sign in to your trading account</p>
           </div>
 
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-[#666] text-xs uppercase tracking-wide">Email</Label>
+              <Label htmlFor="email" className="text-[#94a3b8] text-xs uppercase tracking-wider font-semibold">Email</Label>
               <Input
                 id="email" type="email" value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com" required
-                className="bg-[#111] border-[#222] text-white placeholder:text-[#333] focus-visible:ring-1 focus-visible:ring-[#800020] focus-visible:border-[#800020]/40 h-11 rounded-lg"
+                className="bg-[#11151f] border-[#1e2736] text-white placeholder:text-[#475569] focus-visible:ring-1 focus-visible:ring-[#38bdf8] focus-visible:border-[#38bdf8]/40 h-11 rounded-lg text-sm"
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-[#666] text-xs uppercase tracking-wide">Password</Label>
+              <Label htmlFor="password" className="text-[#94a3b8] text-xs uppercase tracking-wider font-semibold">Password</Label>
               <Input
                 id="password" type="password" value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••" required
-                className="bg-[#111] border-[#222] text-white placeholder:text-[#333] focus-visible:ring-1 focus-visible:ring-[#800020] focus-visible:border-[#800020]/40 h-11 rounded-lg"
+                className="bg-[#11151f] border-[#1e2736] text-white placeholder:text-[#475569] focus-visible:ring-1 focus-visible:ring-[#38bdf8] focus-visible:border-[#38bdf8]/40 h-11 rounded-lg text-sm"
               />
             </div>
 
@@ -76,24 +76,17 @@ export default function SigninPage() {
 
             <button
               type="submit" disabled={loading}
-              className="w-full h-11 rounded-lg font-semibold text-sm text-white transition-opacity active:scale-[0.98] disabled:opacity-50 mt-2"
-              style={{ background: "linear-gradient(135deg, #800020, #a0002a)" }}
+              className="w-full h-11 rounded-lg font-bold text-sm text-[#05131d] bg-[#38bdf8] hover:bg-[#7dd3fc] transition-all shadow-md shadow-sky-950/40 active:scale-[0.98] disabled:opacity-50 mt-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span className="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                   Signing in…
                 </span>
               ) : "Sign in"}
             </button>
           </form>
 
-          <div className="text-center text-xs text-[#444]">
-            No account?{" "}
-            <Link href="/signup" className="text-[#800020] hover:text-[#a0002a] transition-colors">
-              Create one
-            </Link>
-          </div>
         </div>
       </div>
     </div>
