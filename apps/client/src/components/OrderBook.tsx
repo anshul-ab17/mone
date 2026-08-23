@@ -43,15 +43,21 @@ export function OrderBook({ symbol }: { symbol: string }) {
   const fmtQ = (q: number) => q < 0.001 ? q.toFixed(6) : q < 1 ? q.toFixed(4) : q.toFixed(2);
 
   return (
-    <div className="flex flex-col h-full text-xs font-mono bg-[#0d0d0d] select-none">
+    <div className="flex flex-col h-full text-xs font-mono bg-[#0c0f17] select-none">
 
       {/* Header */}
-      <div className="px-3 py-2.5 border-b border-[#1a1a1a] shrink-0">
-        <span className="text-[#555] font-sans font-medium text-[11px] uppercase tracking-wide">Order Book</span>
+      <div className="px-3 py-2.5 border-b border-[#181f2b] shrink-0 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="text-white font-sans font-semibold text-xs">Book</span>
+          <span className="text-[#64748b] font-sans font-medium text-xs">Trades</span>
+        </div>
+        <span className="text-[#64748b] font-mono text-[10px] bg-[#141a24] px-1.5 py-0.5 rounded border border-[#1e2736]">
+          0.001
+        </span>
       </div>
 
       {/* Column labels */}
-      <div className="grid grid-cols-3 px-3 py-1.5 text-[#333] border-b border-[#141414] shrink-0 text-[10px] uppercase tracking-wide">
+      <div className="grid grid-cols-3 px-3 py-1.5 text-[#475569] border-b border-[#141923] shrink-0 text-[10px] uppercase tracking-wide font-sans">
         <span>Price</span>
         <span className="text-right">Size</span>
         <span className="text-right">Total</span>
@@ -62,31 +68,31 @@ export function OrderBook({ symbol }: { symbol: string }) {
         {asks.map((a, i) => {
           const pct = (askTotals[i] / maxAskTotal) * 100;
           return (
-            <div key={a.price} className="relative grid grid-cols-3 px-3 py-[3px] hover:bg-[#161616] transition-colors cursor-default">
-              <div className="absolute inset-y-0 right-0 bg-red-900/15 transition-all" style={{ width: `${pct}%` }} />
-              <span className="text-red-400 relative z-10 tabular-nums">{fmtP(a.price)}</span>
-              <span className="text-right text-[#555] relative z-10 tabular-nums">{fmtQ(a.qty)}</span>
-              <span className="text-right text-[#333] relative z-10 tabular-nums">{fmtQ(askTotals[i])}</span>
+            <div key={a.price} className="relative grid grid-cols-3 px-3 py-[3px] hover:bg-[#151c27] transition-colors cursor-default">
+              <div className="absolute inset-y-0 right-0 bg-[#f84960]/15 transition-all pointer-events-none" style={{ width: `${pct}%` }} />
+              <span className="text-[#f84960] relative z-10 tabular-nums font-medium">{fmtP(a.price)}</span>
+              <span className="text-right text-[#94a3b8] relative z-10 tabular-nums">{fmtQ(a.qty)}</span>
+              <span className="text-right text-[#64748b] relative z-10 tabular-nums">{fmtQ(askTotals[i])}</span>
             </div>
           );
         })}
       </div>
 
       {/* Spread row */}
-      <div className="px-3 py-2 border-y border-[#1a1a1a] bg-[#0a0a0a] flex items-center justify-between shrink-0">
+      <div className="px-3 py-2 border-y border-[#181f2b] bg-[#0d111a] flex items-center justify-between shrink-0">
         {bestAsk ? (
           <>
-            <span className={`font-semibold text-[13px] tabular-nums ${bids[0] && bestAsk >= bids[0].price ? "text-green-400" : "text-red-400"}`}>
+            <span className={`font-bold text-[13px] tabular-nums ${bids[0] && bestAsk >= bids[0].price ? "text-[#00c087]" : "text-[#f84960]"}`}>
               {fmtP(bestAsk)}
             </span>
             {spread !== null && spreadPct !== null && (
-              <span className="text-[#2a2a2a] text-[10px] tabular-nums">
+              <span className="text-[#475569] text-[10px] tabular-nums font-medium">
                 {spread.toFixed(2)} ({spreadPct.toFixed(3)}%)
               </span>
             )}
           </>
         ) : (
-          <span className="text-[#333]">—</span>
+          <span className="text-[#475569]">—</span>
         )}
       </div>
 
@@ -95,11 +101,11 @@ export function OrderBook({ symbol }: { symbol: string }) {
         {bids.map((b, i) => {
           const pct = (bidTotals[i] / maxBidTotal) * 100;
           return (
-            <div key={b.price} className="relative grid grid-cols-3 px-3 py-[3px] hover:bg-[#161616] transition-colors cursor-default">
-              <div className="absolute inset-y-0 right-0 bg-green-900/15 transition-all" style={{ width: `${pct}%` }} />
-              <span className="text-green-400 relative z-10 tabular-nums">{fmtP(b.price)}</span>
-              <span className="text-right text-[#555] relative z-10 tabular-nums">{fmtQ(b.qty)}</span>
-              <span className="text-right text-[#333] relative z-10 tabular-nums">{fmtQ(bidTotals[i])}</span>
+            <div key={b.price} className="relative grid grid-cols-3 px-3 py-[3px] hover:bg-[#151c27] transition-colors cursor-default">
+              <div className="absolute inset-y-0 right-0 bg-[#00c087]/15 transition-all pointer-events-none" style={{ width: `${pct}%` }} />
+              <span className="text-[#00c087] relative z-10 tabular-nums font-medium">{fmtP(b.price)}</span>
+              <span className="text-right text-[#94a3b8] relative z-10 tabular-nums">{fmtQ(b.qty)}</span>
+              <span className="text-right text-[#64748b] relative z-10 tabular-nums">{fmtQ(bidTotals[i])}</span>
             </div>
           );
         })}
