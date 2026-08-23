@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "./ui/button";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { ConnectWalletButton } from "./wallet/ConnectWalletButton";
 
 const NAV_LINKS = [
   { href: "/trade", label: "Trade" },
@@ -20,58 +20,87 @@ export function Navbar() {
     href === "/trade" ? pathname.startsWith("/trade") : pathname === href;
 
   return (
-    <nav className="h-14 bg-[#0d0d0d] border-b border-[#1f1f1f] flex items-center px-6 gap-8 shrink-0">
-      <Link href="/" className="font-bold text-lg tracking-widest text-white shrink-0">
-        <span style={{ color: "#800020" }}>M</span>O<span style={{ color: "#800020" }}>N</span>E
-      </Link>
+    <header
+      className="w-full sticky top-0 z-50 border-b"
+      style={{
+        background: "color-mix(in srgb, var(--surface) 88%, transparent)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderColor: "var(--border)",
+      }}
+    >
+      <div className="max-w-[1166px] mx-auto w-full px-4 sm:px-6 h-14 flex items-center gap-6">
+        <Link href="/" className="flex items-center gap-2.5 shrink-0" aria-label="Mone home">
+          <img
+            src="/warriorr.png"
+            alt="Mone"
+            width={32}
+            height={32}
+            className="rounded-full object-contain"
+          />
+          <span className="font-bold text-base tracking-wide text-white">Mone</span>
+        </Link>
 
-      <div className="flex items-center gap-1 text-sm">
-        {NAV_LINKS.map(({ href, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className={`px-3 py-1.5 rounded-md transition-colors ${
-              isActive(href)
-                ? "text-white bg-[#1a1a1a]"
-                : "text-[#666] hover:text-[#aaa] hover:bg-[#141414]"
-            }`}
-          >
-            {label}
-          </Link>
-        ))}
+        <div className="flex items-center gap-1 text-sm">
+          {NAV_LINKS.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className="px-3 py-1.5 rounded-md transition-colors font-medium"
+              style={
+                isActive(href)
+                  ? { color: "var(--text)", background: "var(--surface-2)" }
+                  : { color: "var(--text-dim)", background: "transparent" }
+              }
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="ml-auto flex items-center gap-3">
+          <ConnectWalletButton
+            className="h-8 px-4 text-xs font-semibold rounded-md"
+            style={{
+              background: "var(--surface-2)",
+              border: "1px solid var(--border)",
+              color: "var(--text)",
+              height: 34,
+              fontSize: 12,
+              borderRadius: 8,
+            }}
+          />
+
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-xs hidden sm:block" style={{ color: "var(--text-faint)" }}>
+                {user.email}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={signout}
+                className="h-8 text-xs"
+                style={{ borderColor: "var(--border)", color: "var(--text-dim)", background: "transparent" }}
+              >
+                Sign out
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+            
+              <Button
+                size="sm"
+                asChild
+                className="h-8 px-4 text-xs font-semibold"
+                style={{ background: "var(--text)", color: "var(--bg)" }}
+              >
+                <Link href="/signin">Sign in</Link>
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
-
-      <div className="ml-auto flex items-center gap-3">
-        <WalletMultiButton
-          style={{ height: 34, fontSize: 12, background: "#161616", border: "1px solid #2a2a2a", borderRadius: 8 }}
-        />
-
-        {user ? (
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-[#555] hidden sm:block">{user.email}</span>
-            <Button
-              variant="outline" size="sm"
-              onClick={signout}
-              className="text-xs border-[#2a2a2a] text-[#666] hover:text-white hover:border-[#444] bg-transparent h-8"
-            >
-              Sign out
-            </Button>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild
-              className="text-xs text-[#666] hover:text-white hover:bg-[#141414] h-8"
-            >
-              <Link href="/signin">Sign in</Link>
-            </Button>
-            <Button size="sm" asChild
-              className="text-xs bg-white text-black hover:bg-white/90 font-semibold h-8 px-4"
-            >
-              <Link href="/signup">Sign up</Link>
-            </Button>
-          </div>
-        )}
-      </div>
-    </nav>
+    </header>
   );
 }
