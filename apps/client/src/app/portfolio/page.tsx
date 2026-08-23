@@ -30,24 +30,15 @@ export default function PortfolioPage() {
 
   if (!user) {
     return (
-      <main className="flex-1 bg-[#07090e] text-white flex flex-col items-center justify-center p-6 min-h-[calc(100vh-3.5rem)]">
-        <div className="max-w-md w-full text-center space-y-5 bg-[#0c0f17] border border-[#181f2b] rounded-2xl p-8 shadow-2xl">
-          <div className="w-14 h-14 rounded-2xl bg-[#141a24] border border-[#1e2736] flex items-center justify-center mx-auto text-[#38bdf8] text-2xl font-bold">
-            💼
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Your Portfolio</h1>
-            <p className="text-xs text-[#64748b] mt-1.5 leading-relaxed">
-              Please sign in to access your personal asset holdings, balances, and performance.
-            </p>
-          </div>
-          <Link
-            href="/signin"
-            className="inline-flex items-center justify-center w-full h-11 rounded-lg text-xs font-bold bg-[#38bdf8] text-[#05131d] hover:bg-[#7dd3fc] transition-all shadow-md shadow-sky-950/40"
-          >
-            Sign In to View Portfolio
-          </Link>
-        </div>
+      <main className="flex-1 bg-[#07090e] text-white flex flex-col items-center justify-center p-6 min-h-[calc(100vh-3.5rem)] text-center space-y-4">
+        <h1 className="text-xl font-semibold text-white">Portfolio</h1>
+        <p className="text-sm text-[#64748b] max-w-sm">Sign in to view your asset holdings and balances.</p>
+        <Link
+          href="/signin"
+          className="inline-flex items-center justify-center px-6 h-10 rounded-lg text-xs font-bold bg-[#38bdf8] text-[#05131d] hover:bg-[#7dd3fc] transition-all shadow-md shadow-sky-950/30"
+        >
+          Sign In
+        </Link>
       </main>
     );
   }
