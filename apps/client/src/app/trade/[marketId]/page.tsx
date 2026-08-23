@@ -52,68 +52,66 @@ export default function TradingPage() {
     v >= 1_000_000 ? `${(v / 1_000_000).toFixed(2)}M` : v >= 1_000 ? `${(v / 1_000).toFixed(1)}K` : v > 0 ? v.toFixed(0) : "—";
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden bg-[#0a0a0a]">
+    <div className="flex-1 flex flex-col w-full max-w-[1166px] mx-auto px-4 sm:px-6 py-2.5 min-h-0 h-[calc(100vh-3.5rem)] overflow-hidden bg-[#07090e]">
+      <div className="flex flex-1 gap-2.5 min-h-0 overflow-hidden">
 
-      {/* ── Top bar ──────────────────────────────────────────────────────── */}
-      <div className="flex items-stretch border-b border-[#1f1f1f] shrink-0 bg-[#0d0d0d] h-12">
-        <MarketDropdown currentSymbol={symbol} />
+        {/* ── Left Column: Ticker + Chart + Bottom Tabs ─────────────────────── */}
+        <div className="flex flex-col flex-1 min-w-0 bg-[#0c0f17] border border-[#181f2b] rounded-xl overflow-hidden shadow-xl">
+          {/* Top Bar */}
+          <div className="flex items-center border-b border-[#181f2b] shrink-0 bg-[#0d111a] h-12 px-3">
+            <MarketDropdown currentSymbol={symbol} />
 
-        {/* Stats strip */}
-        <div className="flex items-center gap-0 px-4 min-w-0 overflow-x-auto">
-          {/* Current price */}
-          <div className="pr-5 shrink-0">
-            <p className={`text-sm font-mono font-bold tabular-nums ${priceUp ? "text-green-400" : "text-red-400"}`}>
-              {fmtP(price)}
-            </p>
-            {live?.markPrice && (
-              <p className="text-[10px] text-[#3a3a3a] font-mono tabular-nums leading-none mt-0.5">
-                Mark {fmtP(live.markPrice)}
-              </p>
-            )}
+            {/* Stats strip */}
+            <div className="flex items-center gap-0 px-2 min-w-0 overflow-x-auto scrollbar-none">
+              <div className="px-3 shrink-0">
+                <p className={`text-sm font-mono font-bold tabular-nums ${priceUp ? "text-[#00c087]" : "text-[#f84960]"}`}>
+                  {fmtP(price)}
+                </p>
+                {live?.markPrice && (
+                  <p className="text-[10px] text-[#475569] font-mono tabular-nums leading-none mt-0.5">
+                    Mark {fmtP(live.markPrice)}
+                  </p>
+                )}
+              </div>
+
+              <StatDivider />
+              <StatItem label="24H Change" value={`${change >= 0 ? "+" : ""}${change.toFixed(2)}%`} colored up={priceUp} />
+              <StatDivider />
+              <StatItem label="24H High" value={fmtP(high)} />
+              <StatDivider />
+              <StatItem label="24H Low"  value={fmtP(low)} />
+              <StatDivider />
+              <StatItem label={`24H Vol (${quote})`} value={fmtVol(vol)} />
+
+              {live?.fundingRate != null && (
+                <>
+                  <StatDivider />
+                  <StatItem
+                    label="Funding / 8h"
+                    value={`${live.fundingRate >= 0 ? "+" : ""}${(live.fundingRate * 100).toFixed(4)}%`}
+                    colored up={live.fundingRate >= 0}
+                  />
+                </>
+              )}
+            </div>
           </div>
 
-          <StatDivider />
-          <StatItem label="24H Change" value={`${change >= 0 ? "+" : ""}${change.toFixed(2)}%`} colored up={priceUp} />
-          <StatDivider />
-          <StatItem label="24H High" value={fmtP(high)} />
-          <StatDivider />
-          <StatItem label="24H Low"  value={fmtP(low)} />
-          <StatDivider />
-          <StatItem label={`Vol (${quote})`} value={fmtVol(vol)} />
-
-          {live?.fundingRate != null && (
-            <>
-              <StatDivider />
-              <StatItem
-                label="Funding / 8h"
-                value={`${live.fundingRate >= 0 ? "+" : ""}${(live.fundingRate * 100).toFixed(4)}%`}
-                colored up={live.fundingRate >= 0}
-              />
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* ── Main layout ──────────────────────────────────────────────────── */}
-      <div className="flex flex-1 overflow-hidden">
-
-        {/* Chart + bottom panel */}
-        <div className="flex flex-col flex-1 overflow-hidden min-w-0">
-          <div className="flex-1 min-h-0">
+          {/* Chart area */}
+          <div className="flex-1 min-h-0 bg-[#0c0f17]">
             <PriceChart symbol={symbol} />
           </div>
 
           {/* Bottom tabs */}
-          <div className="h-44 shrink-0 border-t border-[#1f1f1f] flex flex-col bg-[#0d0d0d]">
-            <div className="flex border-b border-[#1a1a1a] text-xs shrink-0">
+          <div className="h-44 shrink-0 border-t border-[#181f2b] flex flex-col bg-[#0d111a]">
+            <div className="flex border-b border-[#181f2b] text-xs shrink-0 px-3">
               {(["orders", "trades"] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => setBottomTab(t)}
-                  className={`px-4 py-2.5 font-medium transition-colors ${
+                  className={`px-3 py-2.5 font-medium text-xs transition-colors border-b-2 ${
                     bottomTab === t
-                      ? "text-white border-b-2 border-[#800020]"
-                      : "text-[#444] hover:text-[#777]"
+                      ? "text-white border-[#38bdf8]"
+                      : "text-[#64748b] hover:text-[#94a3b8] border-transparent"
                   }`}
                 >
                   {t === "orders" ? "Open Orders" : "Recent Trades"}
@@ -125,33 +123,34 @@ export default function TradingPage() {
                 ? <OpenOrders refreshKey={orderKey} />
                 : dbMarket
                   ? <RecentTrades marketId={dbMarket.id} />
-                  : <div className="flex items-center justify-center h-full text-[#333] text-xs">No trades yet</div>
+                  : <div className="flex items-center justify-center h-full text-[#475569] text-xs">No trades yet</div>
               }
             </div>
           </div>
         </div>
 
-        {/* Order book */}
-        <div className="w-56 shrink-0 border-l border-[#1f1f1f] overflow-hidden bg-[#0d0d0d]">
+        {/* ── Middle Column: Order Book ──────────────────────────────────────── */}
+        <div className="w-60 shrink-0 bg-[#0c0f17] border border-[#181f2b] rounded-xl overflow-hidden shadow-xl flex flex-col">
           <OrderBook symbol={symbol} />
         </div>
 
-        {/* Buy / Sell panel */}
-        <div className="w-72 shrink-0 border-l border-[#1f1f1f] bg-[#0d0d0d] overflow-auto">
+        {/* ── Right Column: Order Placement ─────────────────────────────────── */}
+        <div className="w-72 shrink-0 bg-[#0c0f17] border border-[#181f2b] rounded-xl overflow-auto shadow-xl flex flex-col">
           {dbLoading ? (
             <div className="flex items-center justify-center h-full">
-              <span className="w-4 h-4 border-2 border-[#2a2a2a] border-t-[#555] rounded-full animate-spin" />
+              <span className="w-5 h-5 border-2 border-[#1e293b] border-t-[#38bdf8] rounded-full animate-spin" />
             </div>
           ) : dbMarket ? (
             <OrderForm market={dbMarket} onOrderPlaced={() => setOrderKey((k) => k + 1)} />
           ) : (
             <div className="flex flex-col items-center justify-center h-full gap-4 p-6 text-center">
-              <p className="text-[#444] text-sm leading-relaxed">
+              <p className="text-[#64748b] text-sm leading-relaxed">
                 Trading {base}/{quote} is not available yet.
               </p>
             </div>
           )}
         </div>
+
       </div>
     </div>
   );
@@ -161,9 +160,9 @@ function StatItem({ label, value, colored, up }: {
   label: string; value: string; colored?: boolean; up?: boolean;
 }) {
   return (
-    <div className="px-4 shrink-0 space-y-0.5">
-      <p className="text-[#3a3a3a] text-[10px] uppercase tracking-wide leading-none">{label}</p>
-      <p className={`font-mono text-xs font-medium tabular-nums ${colored ? (up ? "text-green-400" : "text-red-400") : "text-[#888]"}`}>
+    <div className="px-3 shrink-0 space-y-0.5">
+      <p className="text-[#64748b] text-[10px] uppercase tracking-wide leading-none">{label}</p>
+      <p className={`font-mono text-xs font-medium tabular-nums ${colored ? (up ? "text-[#00c087]" : "text-[#f84960]") : "text-[#cbd5e1]"}`}>
         {value}
       </p>
     </div>
@@ -171,5 +170,5 @@ function StatItem({ label, value, colored, up }: {
 }
 
 function StatDivider() {
-  return <div className="w-px h-5 bg-[#1a1a1a] shrink-0" />;
+  return <div className="w-px h-5 bg-[#181f2b] shrink-0" />;
 }
