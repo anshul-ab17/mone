@@ -12,22 +12,46 @@ export default function PortfolioPage() {
   const [fetching, setFetching] = useState(false);
 
   useEffect(() => {
+    if (!user) return;
     setFetching(true);
     api.wallet.list()
       .then((r) => setWallets(r.wallets ?? []))
-      .catch(() => {})
+      .catch(() => setWallets([]))
       .finally(() => setFetching(false));
   }, [user]);
 
   if (loading) {
     return (
-      <div className="flex flex-1 items-center justify-center">
-        <span className="w-5 h-5 border-2 border-[#1e293b] border-t-[#38bdf8] rounded-full animate-spin" />
-      </div>
+      <main className="flex-1 bg-[#07090e] text-white flex items-center justify-center min-h-[calc(100vh-3.5rem)]">
+        <span className="w-6 h-6 border-2 border-[#1e293b] border-t-[#38bdf8] rounded-full animate-spin" />
+      </main>
     );
   }
 
-  const displayUser = user ?? { email: "trader@mone.io" };
+  if (!user) {
+    return (
+      <main className="flex-1 bg-[#07090e] text-white flex flex-col items-center justify-center p-6 min-h-[calc(100vh-3.5rem)]">
+        <div className="max-w-md w-full text-center space-y-5 bg-[#0c0f17] border border-[#181f2b] rounded-2xl p-8 shadow-2xl">
+          <div className="w-14 h-14 rounded-2xl bg-[#141a24] border border-[#1e2736] flex items-center justify-center mx-auto text-[#38bdf8] text-2xl font-bold">
+            💼
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-white tracking-tight">Your Portfolio</h1>
+            <p className="text-xs text-[#64748b] mt-1.5 leading-relaxed">
+              Please sign in to access your personal asset holdings, balances, and performance.
+            </p>
+          </div>
+          <Link
+            href="/signin"
+            className="inline-flex items-center justify-center w-full h-11 rounded-lg text-xs font-bold bg-[#38bdf8] text-[#05131d] hover:bg-[#7dd3fc] transition-all shadow-md shadow-sky-950/40"
+          >
+            Sign In to View Portfolio
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   const totalUSD = wallets.reduce((acc, w) => acc + (w.asset === "USDC" ? w.balance : w.balance * (w.asset === "BTC" ? 96450 : w.asset === "ETH" ? 2785 : w.asset === "SOL" ? 188 : 79)), 0);
 
   return (
@@ -36,7 +60,7 @@ export default function PortfolioPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Portfolio</h1>
-          <p className="text-xs text-[#64748b] mt-0.5">{displayUser.email}</p>
+          <p className="text-xs text-[#64748b] mt-0.5">{user.email}</p>
         </div>
         <Link
           href="/deposit"

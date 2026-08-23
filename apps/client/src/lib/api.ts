@@ -151,34 +151,12 @@ let mockOrdersMemory: Order[] = [
 
 export const api = {
   auth: {
-    signup: async (email: string, password: string) => {
-      try {
-        return await request<{ success: boolean; data: User }>("/api/user/signup", { method: "POST", body: JSON.stringify({ email, password }) });
-      } catch {
-        return { success: true, data: { id: "mock-user-1", email, createdAt: new Date().toISOString() } };
-      }
-    },
-    signin: async (email: string, password: string) => {
-      try {
-        return await request<{ success: boolean; data: { access: string; refresh: string } }>("/api/user/signin", { method: "POST", body: JSON.stringify({ email, password }) });
-      } catch {
-        return { success: true, data: { access: "mock-token-access", refresh: "mock-token-refresh" } };
-      }
-    },
-    signout: async () => {
-      try {
-        return await request<{ success: boolean }>("/api/user/signout", { method: "POST" });
-      } catch {
-        return { success: true };
-      }
-    },
-    me: async () => {
-      try {
-        return await request<{ success: boolean; data: User }>("/api/user/me");
-      } catch {
-        return { success: true, data: { id: "mock-user-1", email: "trader@mone.io", createdAt: new Date().toISOString() } };
-      }
-    },
+    signup: (email: string, password: string) =>
+      request<{ success: boolean; data: User }>("/api/user/signup", { method: "POST", body: JSON.stringify({ email, password }) }),
+    signin: (email: string, password: string) =>
+      request<{ success: boolean; data: { access: string; refresh: string } }>("/api/user/signin", { method: "POST", body: JSON.stringify({ email, password }) }),
+    signout: () => request<{ success: boolean }>("/api/user/signout", { method: "POST" }),
+    me: () => request<{ success: boolean; data: User }>("/api/user/me"),
   },
   markets: {
     list: async () => {
@@ -309,20 +287,6 @@ export const api = {
     },
   },
   wallet: {
-    list: async () => {
-      try {
-        return await request<{ wallets: Wallet[] }>("/api/wallet");
-      } catch {
-        return {
-          wallets: [
-            { id: "w-usdc", asset: "USDC", balance: 145280.5, lockedBalance: 14175.0 },
-            { id: "w-sol", asset: "SOL", balance: 148.55, lockedBalance: 12.0 },
-            { id: "w-btc", asset: "BTC", balance: 1.482, lockedBalance: 0.15 },
-            { id: "w-eth", asset: "ETH", balance: 18.25, lockedBalance: 0 },
-            { id: "w-hype", asset: "HYPE", balance: 1250.0, lockedBalance: 0 },
-          ],
-        };
-      }
-    },
+    list: () => request<{ wallets: Wallet[] }>("/api/wallet"),
   },
 };

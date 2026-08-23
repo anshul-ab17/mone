@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from "@/context/AuthContext";
 import { ConnectWalletButton } from "@/components/wallet/ConnectWalletButton";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
@@ -14,21 +16,23 @@ type DepositEntry = {
 };
 
 export default function DepositPage() {
+  const { user, loading: authLoading } = useAuth();
   const { connected, publicKey } = useWallet();
-  const [depositAddress, setDepositAddress] = useState<string | null>("8xMoneVaultDevnetSol9wLp2kQr7T1vZy4E");
+  const [depositAddress, setDepositAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string>("devnet");
-  const [history, setHistory] = useState<DepositEntry[]>([
-    { signature: "5Kq...8z1x", amount: 15.0, asset: "SOL", createdAt: new Date(Date.now() - 3600000).toISOString() },
-    { signature: "3Pt...9y4w", amount: 2.5, asset: "SOL", createdAt: new Date(Date.now() - 86400000).toISOString() },
-  ]);
+  const [history, setHistory] = useState<DepositEntry[]>([]);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) return;
     fetchDepositInfo();
-  }, []);
+  }, [user]);
 
   async function fetchDepositInfo() {
+    setLoading(true);
+    setError(null);
     try {
       const [addrRes, histRes] = await Promise.all([
         fetch(`${API}/api/deposit/address`, { credentials: "include" }),
@@ -38,15 +42,20 @@ export default function DepositPage() {
       if (addrRes.ok) {
         const { publicKey, network } = await addrRes.json();
         setDepositAddress(publicKey);
-        setNetwork(network);
+        if (network) setNetwork(network);
+      } else {
+        const errJson = await addrRes.json().catch(() => ({}));
+        setError(errJson.error ?? "Failed to load deposit address");
       }
 
       if (histRes.ok) {
         const { deposits } = await histRes.json();
-        if (deposits?.length) setHistory(deposits);
+        if (deposits) setHistory(deposits);
       }
     } catch {
-      // Fallback already pre-set
+      setError("Deposit service temporarily unreachable");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -55,6 +64,38 @@ export default function DepositPage() {
     navigator.clipboard.writeText(depositAddress);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  if (authLoading) {
+    return (
+      <main className="flex-1 bg-[#07090e] text-white flex items-center justify-center min-h-[calc(100vh-3.5rem)]">
+        <span className="w-6 h-6 border-2 border-[#1e293b] border-t-[#38bdf8] rounded-full animate-spin" />
+      </main>
+    );
+  }
+
+  if (!user) {
+    return (
+      <main className="flex-1 bg-[#07090e] text-white flex flex-col items-center justify-center p-6 min-h-[calc(100vh-3.5rem)]">
+        <div className="max-w-md w-full text-center space-y-5 bg-[#0c0f17] border border-[#181f2b] rounded-2xl p-8 shadow-2xl">
+          <div className="w-14 h-14 rounded-2xl bg-[#141a24] border border-[#1e2736] flex items-center justify-center mx-auto text-[#38bdf8] text-2xl font-bold">
+            $
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-white tracking-tight">Deposit Crypto</h1>
+            <p className="text-xs text-[#64748b] mt-1.5 leading-relaxed">
+              Please sign in to access your personal deposit address and transaction history.
+            </p>
+          </div>
+          <Link
+            href="/signin"
+            className="inline-flex items-center justify-center w-full h-11 rounded-lg text-xs font-bold bg-[#38bdf8] text-[#05131d] hover:bg-[#7dd3fc] transition-all shadow-md shadow-sky-950/40"
+          >
+            Sign In to Deposit
+          </Link>
+        </div>
+      </main>
+    );
   }
 
   return (
